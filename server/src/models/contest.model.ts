@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface ContestDocument extends Document {
   contestId: string;
   questions: string[];
-  gitHubUsername: string;
+  gitHubUsername: string[];
   timeLimit: number;
   participants: string[];
 }
@@ -19,7 +19,7 @@ const ContestSchema: Schema<ContestDocument> = new Schema({
     required: true,
   },
   gitHubUsername: {
-    type: String,
+    type: [String],
     required: true,
   },
   timeLimit: {

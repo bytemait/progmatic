@@ -7,7 +7,7 @@
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/IshaanMinocha/progmatic.git
+   git clone https://github.com/bytemait/progmatic.git
    ```
 
 2. Navigate to the server directory:

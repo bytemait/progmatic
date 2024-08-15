@@ -1,6 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import ContestModel from "../models/contest.model.js";
 import QuestionModel from '../models/question.model.js';
+import UserModel from "../models/user.model.js";
 
 export const getContestById= async (req: any,res: any,next:any): Promise<void>=>{
     try {
@@ -33,7 +34,7 @@ export const getAllContests=async (req:any,res:any,next:any):Promise<void>=>{
 
 export const createNewContest = async (req: any, res: any, next: any): Promise<void> => {
   try {
-    const { contestId, questionIds, gitHubUsername, timeLimit } = req.body;
+    const { contestId, questionIds, participantIds, timeLimit } = req.body;
 
     // Validate question IDs (optional)
     const questions = await QuestionModel.find({ _id: { $in: questionIds } });
@@ -41,10 +42,19 @@ export const createNewContest = async (req: any, res: any, next: any): Promise<v
       return res.status(400).json({ error: 'One or more questions not found' });
     }
 
+    // Validate participant IDs
+    const participants = await UserModel.find({ _id: { $in: participantIds } });
+    if (participants.length !== participantIds.length) {
+      return res.status(400).json({ error: 'One or more participants not found' });
+    }
+
     const newContest = await ContestModel.create({
       contestId,
       questions, // Array of question objects
-      gitHubUsername,
+      participants,
+      //extract github username from user model data
+      gitHubUsername: participants.map(user => user.gitHubUsername),
+      //gitHubUsername,
       timeLimit,
     });
 

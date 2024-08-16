@@ -10,7 +10,7 @@ const CodeRight: React.FC = () => {
 // </div>
 
   return (
-    <div style={{width:'100%', height:'100%'}} className="pt-20 text-black">
+    <div style={{width:'100%', height:'100%'}} className="text-black">
       <Split mode='vertical'>
       <div style={{height:'50%'}} >
         <textarea
@@ -21,7 +21,7 @@ const CodeRight: React.FC = () => {
         />
       </div>
       <div style={{height:'50%'}} className="pl-2 bg-white">
-        Output: <pre>{programOutput}</pre>
+        <pre>{programOutput}</pre>
       </div>
       </Split>
     </div>

@@ -34,7 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/question", questionRouter);
 app.use("/api/contests", contestRouter);
-// app.use("/api/leaderboard",leaderboardRouter)
+app.use("/api/leaderboard",leaderboardRouter)
 app.use("/api/submission", submissionRouter)
 
 app.get("/", (req, res) => {

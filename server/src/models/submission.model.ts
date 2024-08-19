@@ -2,15 +2,15 @@ import mongoose, { Document, Schema } from 'mongoose';
 import { ContestDocument } from './contest.model.js';
 
 interface SubmissionDocument extends Document {
-  contest: ContestDocument['_id'];
+  contestId: ContestDocument['_id'];
   languageUsed: string;
   timeTaken: number; // Time taken in milliseconds
   score: number;
-  result: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected';
 }
 
 const SubmissionSchema: Schema<SubmissionDocument> = new Schema({
-  contest: {
+  contestId: {
     type: Schema.Types.ObjectId,
     ref: 'Contest',
     required: true
@@ -27,7 +27,7 @@ const SubmissionSchema: Schema<SubmissionDocument> = new Schema({
     type: Number,
     required: true
   },
-  result: {
+  status: {
     type: String,
     enum: ['pending', 'accepted', 'rejected'],
     required: true

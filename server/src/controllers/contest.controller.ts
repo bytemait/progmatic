@@ -64,3 +64,21 @@ export const createNewContest = async (req: any, res: any, next: any): Promise<v
     return res.status(400).json({ error: "There was some error" });
   }
 };
+
+export const deleteContest = async (req: any, res: any, next: any): Promise<void> => {
+  try {
+    const contestId = req.params.id;
+    const contest = await ContestModel.findOne({ contestId });
+    if (!contest) {
+      throw new ApiError(404, "Contest not found");
+    }
+    await ContestModel.deleteOne({ contestId });
+    res.status(200).json({ message: "Contest deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    if (error instanceof ApiError) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};

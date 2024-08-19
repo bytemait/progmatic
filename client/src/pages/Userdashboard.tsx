@@ -1,4 +1,3 @@
-import React from 'react';
 import Sidebar from '../components/Sidebar';
 import DashboardHeader from '../components/DashboardHeader';
 import ProgressTable from '../components/ProgressTable';

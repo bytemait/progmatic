@@ -19,7 +19,7 @@ export default function Footers() {
           </Footer.LinkGroup>
         </div>
         <Footer.Divider /> */}
-        <Footer.Copyright className="text-xl text-white font-semibold" href="https://github.com/IshaanMinocha/progmatic" by="bytesoc" year={2024} />
+        <Footer.Copyright className="text-xl text-white font-semibold" href="https://github.com/bytemait/progmatic" by="bytesoc" year={2024} />
       </div>
     </Footer>
   );

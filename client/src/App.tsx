@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import Easter from "./components/Easter";
 import Contest from "./pages/Contest";
 import Userdashboard from "./pages/Userdashboard";
+import Admin from "./pages/Admin";
 
 function App() {
 
@@ -29,6 +30,8 @@ function App() {
           <Route path="*" element={<Navigate to="/404" />} />
           <Route path="/404" element={<Error404 />} />
           <Route path="/u/:username" element={<Userdashboard />} /> 
+          <Route path="/admin" element={<Admin />} /> 
+
         </Routes>
         <Easter />
         <Footer />

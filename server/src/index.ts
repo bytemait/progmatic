@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 import { check } from "express-validator";
 import leaderboardRouter from "./routes/leaderboard.routes.js";
 import submissionRouter from "./routes/submission.routes.js";
-
+import postRouter from "./routes/post.routes.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -36,7 +36,7 @@ app.use("/api/question", questionRouter);
 app.use("/api/contests", contestRouter);
 app.use("/api/leaderboard",leaderboardRouter)
 app.use("/api/submission", submissionRouter)
-
+app.use("/api/discussion",postRouter)
 app.get("/", (req, res) => {
   res.send("CORS Server Running!");
 });

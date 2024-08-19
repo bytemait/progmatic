@@ -1,11 +1,16 @@
 import React from 'react';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  username: string | undefined;
+}
+
+
+const Sidebar: React.FC<SidebarProps> = ({ username }) => {
   return (
     <div className="bg-gray-900 text-white w-64 p-4">
       <div className="flex flex-col md:ml-16 ml-32 items-center">
         <div className="bg-gray-700  rounded-full w-24 h-24"></div>
-        <h2 className="mt-4 text-xl font-semibold">Username</h2>
+        <h2 className="mt-4 text-xl font-semibold">{username}</h2>
         <p className="text-sm text-gray-400">user_id</p>
         <p className="text-sm">he/him</p>
         <p className="mt-2 font-semibold">Rank#123</p>

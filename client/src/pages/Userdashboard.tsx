@@ -2,8 +2,11 @@ import React from 'react';
 import Sidebar from '../components/Sidebar';
 import DashboardHeader from '../components/DashboardHeader';
 import ProgressTable from '../components/ProgressTable';
+import { useParams } from 'react-router-dom';
 
 function Userdashboard() {
+  const { username } = useParams<{ username: string }>();
+
   const contestData = [
     { contestCode: 'ABC1', contestName: 'Contest 1', pointsScored: 60, rank: 1 },
     { contestCode: 'ABC2', contestName: 'Contest 2', pointsScored: 70, rank: 2 },
@@ -24,7 +27,7 @@ function Userdashboard() {
     <div className="min-h-screen pt-20 flex flex-col md:flex-row bg-gray-900">
       {/* Sidebar */}
       <div className="w-full md:w-1/4 lg:w-1/5">
-        <Sidebar />
+        <Sidebar username={username} />
       </div>
 
       {/* Main Content */}

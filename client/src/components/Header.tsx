@@ -1,7 +1,7 @@
 /* eslint-disable no-inner-declarations */
 import { useEffect, useState } from "react";
 import { Avatar, Dropdown, Navbar } from "flowbite-react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import axios, { AxiosResponse } from "axios";
 
 interface UserData {
@@ -50,8 +50,7 @@ export default function Header() {
           },
         })
         .then((data) => {
-          setUserData(data.data);
-          // console.log(data.data);
+          setUserData(data.data);          
           setIsLoggedIn(true);
         });
     }
@@ -62,8 +61,7 @@ export default function Header() {
 
   const handleLoginWithGitHub = () => {
     window.location.assign(
-      `https://github.com/login/oauth/authorize?client_id=${
-        import.meta.env.VITE_GITHUB_CLIENT_ID
+      `https://github.com/login/oauth/authorize?client_id=${import.meta.env.VITE_GITHUB_CLIENT_ID
       }`
     );
   };
@@ -98,8 +96,9 @@ export default function Header() {
                 {userData?.email}
               </span>
             </Dropdown.Header>
-            <Dropdown.Item>Dashboard</Dropdown.Item>
-            <Dropdown.Item>UI Settings</Dropdown.Item>
+            <Link to={`/u/${userData?.login}`}>
+              <Dropdown.Item>Dashboard</Dropdown.Item>
+            </Link>
             <Dropdown.Divider />
             <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
           </Dropdown>

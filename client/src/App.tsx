@@ -28,9 +28,7 @@ function App() {
           <Route path="/learn" element={<Learn />} />
           <Route path="*" element={<Navigate to="/404" />} />
           <Route path="/404" element={<Error404 />} />
-          {/* yaha pr integrate h username ko  */}
-          <Route path="/u/username" element={<Userdashboard />} /> 
-
+          <Route path="/u/:username" element={<Userdashboard />} /> 
         </Routes>
         <Easter />
         <Footer />

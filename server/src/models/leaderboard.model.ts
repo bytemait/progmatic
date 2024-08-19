@@ -12,7 +12,6 @@ interface LeaderboardDocument extends Document {
   correctAnswers: number;
 }
 
-
 const LeaderboardSchema: Schema<LeaderboardDocument> = new Schema({
   rank: { 
     type: Number, 

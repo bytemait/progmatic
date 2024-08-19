@@ -10,6 +10,8 @@ import UserModel from "./models/user.model.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { check } from "express-validator";
+import leaderboardRouter from "./routes/leaderboard.routes.js";
+import submissionRouter from "./routes/submission.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -32,6 +34,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/question", questionRouter);
 app.use("/api/contests", contestRouter);
+app.use("/api/leaderboard",leaderboardRouter)
+app.use("/api/submission", submissionRouter)
 
 app.get("/", (req, res) => {
   res.send("CORS Server Running!");

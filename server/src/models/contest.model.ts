@@ -18,10 +18,6 @@ const ContestSchema: Schema<ContestDocument> = new Schema({
     type: [String],
     required: true,
   },
-  gitHubUsername: {
-    type: [String],
-    required: true,
-  },
   timeLimit: {
     type: Number,
     required: true,

@@ -11,7 +11,7 @@ type ProgressTableProps = {
   data: ContestData[];
 };
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 
 const ProgressTable: React.FC<ProgressTableProps> = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(1);

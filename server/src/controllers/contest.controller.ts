@@ -9,7 +9,6 @@ export const getContestById= async (req: any,res: any,next:any): Promise<void>=>
         const contest=await ContestModel.findOne({contestId:`${cId}`});
         if(!contest){
             throw new ApiError(404,"Contest not found")
-            return
         }
         return res.status(200).json({contest})
     } catch (error) {
@@ -23,7 +22,7 @@ export const getAllContests=async (req:any,res:any,next:any):Promise<void>=>{
         const contest=await ContestModel.find();
         if(!contest){
             throw new ApiError(400,"No contests found");
-            return;
+            
         }
         res.status(200).json(contest);
     } catch (error) {
@@ -37,23 +36,23 @@ export const createNewContest = async (req: any, res: any, next: any): Promise<v
     const { contestId, questionIds, participantIds, timeLimit } = req.body;
 
     // Validate question IDs (optional)
-    const questions = await QuestionModel.find({ _id: { $in: questionIds } });
-    if (questions.length !== questionIds.length) {
-      return res.status(400).json({ error: 'One or more questions not found' });
-    }
+     const questions = await QuestionModel.find({ _id: { $in: questionIds } });
+    // if (questions.length !== questionIds.length) {
+    //   return res.status(400).json({ error: 'One or more questions not found' });
+    // }
 
     // Validate participant IDs
-    const participants = await UserModel.find({ _id: { $in: participantIds } });
-    if (participants.length !== participantIds.length) {
-      return res.status(400).json({ error: 'One or more participants not found' });
-    }
+     const participants = await UserModel.find({ _id: { $in: participantIds } });
+    // if (participants.length !== participantIds.length) {
+    //   return res.status(400).json({ error: 'One or more participants not found' });
+    // }
 
     const newContest = await ContestModel.create({
       contestId,
       questions, // Array of question objects
       participants,
       //extract github username from user model data
-      gitHubUsername: participants.map(user => user.gitHubUsername),
+      // gitHubUsername: participants.map(user => user.gitHubUsername),
       //gitHubUsername,
       timeLimit,
     });
@@ -68,11 +67,13 @@ export const createNewContest = async (req: any, res: any, next: any): Promise<v
 export const deleteContest = async (req: any, res: any, next: any): Promise<void> => {
   try {
     const contestId = req.params.id;
-    const contest = await ContestModel.findOne({ contestId });
+    console.log(contestId);
+    
+    const contest = await ContestModel.findById( contestId );
     if (!contest) {
       throw new ApiError(404, "Contest not found");
     }
-    await ContestModel.deleteOne({ contestId });
+    await ContestModel.findOneAndDelete({ _id:contestId });
     res.status(200).json({ message: "Contest deleted successfully" });
   } catch (error) {
     console.log(error);

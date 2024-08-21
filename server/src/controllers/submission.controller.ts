@@ -1,76 +1,46 @@
-import express from 'express';
-import SubmissionModel from '../models/submission.model.js';
+import { SubmissionModel } from '../models/submission.model.js';
+import { Request, Response } from 'express';
 
-
-export const createSubmission = async(req:any, res:any, next:any):Promise <void>  => {
+// Submit a new submission
+export const submitSubmission = async (req: Request, res: Response) => {
   try {
-    const { contestId, languageUsed, timeTaken, score, result, status } = req.body;
-
-    const submission = new SubmissionModel({
-      contestId,
-      languageUsed,
-      timeTaken,
-      score,
-      result,
-      status,
-    });
-
+    const submission = new SubmissionModel(req.body);
     const savedSubmission = await submission.save();
-
     res.status(201).json(savedSubmission);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to create submission' });
+    res.status(400).json({ message: (error as Error).message });
   }
 };
 
-export const getSubmissions = async (req: express.Request, res: express.Response) => {
+
+// Get all submissions
+export const getAllSubmissions = async (req: Request, res: Response) => {
   try {
-    const { contestId } = req.params;
-    const submissions = await SubmissionModel.find({ contestId });
-    res.json(submissions);
+    const submissions = await SubmissionModel.find();
+    res.status(200).json(submissions);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch submissions' });
+    res.status(500).json({ message: (error as Error).message });
   }
 };
 
-export const getSubmission = async (req: express.Request, res: express.Response) => {
+// Get submission by user ID or submission ID
+export const getSubmissionByUserIdOrSubmissionId = async (req: Request, res: Response) => {
+  const { userId, submissionId } = req.params;
+  
   try {
-    const { contestId, submissionId } = req.params;
-    const submission = await SubmissionModel.findOne({ _id: submissionId, contestId });
-    if (!submission) {
-      return res.status(404).json({ error: 'Submission not found' });
+    let submission;
+    if (submissionId) {
+      submission = await SubmissionModel.findById(submissionId);
+    } else if (userId) {
+      submission = await SubmissionModel.find({ userId });
     }
-    res.json(submission);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch submission' });
-  }
-};
 
-export const updateSubmission = async (req: express.Request, res: express.Response) => {
-  try {
-    const { submissionId } = req.params;
-    const updateData = req.body;
-    const submission = await SubmissionModel.findByIdAndUpdate(submissionId, updateData, { new: true });
     if (!submission) {
-      return res.status(404).json({ error: 'Submission not found' });
+      return res.status(404).json({ message: 'Submission not found' });
     }
-    res.json(submission);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to update submission' });
-  }
-};
 
-export const deleteSubmission = async (req: express.Request, res: express.Response) => {
-  try {
-    const { submissionId } = req.params;
-    await SubmissionModel.findByIdAndDelete(submissionId);
-    res.status(204).send(); // No content
+    res.status(200).json(submission);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to delete submission' });
+    res.status(500).json({ message: (error as Error).message });
   }
 };

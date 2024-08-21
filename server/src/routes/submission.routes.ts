@@ -1,13 +1,11 @@
-// controller.js
 import express from 'express';
-import { createSubmission, getSubmissions, getSubmission, updateSubmission, deleteSubmission } from "../controllers/submission.controller.js";
+import { submitSubmission, getAllSubmissions, getSubmissionByUserIdOrSubmissionId } from '../controllers/submission.controller.js';
 
 const submissionRouter = express.Router();
 
-submissionRouter.post('/submissions', createSubmission);
-submissionRouter.get('/submissions/:contestId', getSubmissions);
-submissionRouter.get('/submissions/:contestId/:submissionId', getSubmission);
-submissionRouter.put('/submissions/:submissionId', updateSubmission);
-submissionRouter.delete('/submissions/:submissionId', deleteSubmission);
+submissionRouter.post('/submissions', submitSubmission);
+submissionRouter.get('/submissions', getAllSubmissions);
+submissionRouter.get('/submissions/:submissionId', getSubmissionByUserIdOrSubmissionId);
+submissionRouter.get('/submissions/user/:userId', getSubmissionByUserIdOrSubmissionId);
 
 export default submissionRouter;

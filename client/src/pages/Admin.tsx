@@ -31,7 +31,7 @@ const Admin: React.FC = () => {
 
   const fetchContests = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/contests');
+      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/contests`);
       setContests(response.data);
     } catch (error) {
       console.error('Error fetching contests:', error);
@@ -40,7 +40,7 @@ const Admin: React.FC = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/questions');
+      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/questions`);
       setQuestions(response.data);
     } catch (error) {
       console.error('Error fetching questions:', error);
@@ -53,10 +53,10 @@ const Admin: React.FC = () => {
       try {
         if (selectedContest._id) {
           // Update Contest
-          await axios.put(`http://localhost:5000/api/contests/${selectedContest._id}`, selectedContest);
+          await axios.put(`${import.meta.env.VITE_HOST}/api/contests/${selectedContest._id}`, selectedContest);
         } else {
           // Create Contest
-          await axios.post('http://localhost:5000/api/contests/createContest', selectedContest);
+          await axios.post(`${import.meta.env.VITE_HOST}/api/contests/createContest`, selectedContest);
         }
         fetchContests();
         setSelectedContest(null);
@@ -85,7 +85,7 @@ const Admin: React.FC = () => {
 
   const handleContestDelete = async (id: string) => {
     try {
-      await axios.get(`http://localhost:5000/api/contests/delete/${id}`);
+      await axios.get(`${import.meta.env.VITE_HOST}/api/contests/delete/${id}`);
       fetchContests();
     } catch (error) {
       console.error('Error deleting contest:', error);

@@ -2,6 +2,8 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface ContestDocument extends Document {
   contestId: string;
+  contestName : string;
+  contestRules: string;
   questions: string[];
   gitHubUsername: string[];
   timeLimit: number;
@@ -10,6 +12,16 @@ export interface ContestDocument extends Document {
 
 const ContestSchema: Schema<ContestDocument> = new Schema({
   contestId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  contestName: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  contestRules: {
     type: String,
     required: true,
     unique: true,

@@ -10,7 +10,7 @@ interface Example {
   output: string;
 }
 
-interface QuestionDocument extends Document {
+export interface QuestionDocument extends Document {
   questionId: string;
   questionName: string;
   title: string;

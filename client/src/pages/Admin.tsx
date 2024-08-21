@@ -10,6 +10,8 @@ interface Question {
 interface Contest {
   _id: string;
   contestId: string;
+  contestName: string; // New field for contest name
+  contestRules: string; // Field for contest rules
   questions: string[]; // Only storing question IDs
   participants: string[];
   timeLimit: number;
@@ -56,7 +58,7 @@ const Admin: React.FC = () => {
           // Create Contest
           await axios.post('http://localhost:5000/api/contests/createContest', selectedContest);
         }
-       fetchContests();
+        fetchContests();
         setSelectedContest(null);
       } catch (error) {
         console.error('Error saving contest:', error);
@@ -83,8 +85,6 @@ const Admin: React.FC = () => {
 
   const handleContestDelete = async (id: string) => {
     try {
-      console.log(id);
-      
       await axios.get(`http://localhost:5000/api/contests/delete/${id}`);
       fetchContests();
     } catch (error) {
@@ -95,7 +95,7 @@ const Admin: React.FC = () => {
   return (
     <div className="container mx-auto p-4 mt-20 min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Admin's Den</h1>
-      
+
       {/* Display Contests */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-2">Contests</h2>
@@ -120,7 +120,18 @@ const Admin: React.FC = () => {
         </ul>
         <button
           className="bg-green-500 text-white px-2 py-1 rounded mt-2"
-          onClick={() => setSelectedContest({ _id: '', contestId: '', questions: [], participants: [], timeLimit: 0, active: false })}
+          onClick={() =>
+            setSelectedContest({
+              _id: '',
+              contestId: '',
+              contestName: '',
+              contestRules: '',
+              questions: [],
+              participants: [],
+              timeLimit: 0,
+              active: false,
+            })
+          }
         >
           Add Contest
         </button>
@@ -137,6 +148,25 @@ const Admin: React.FC = () => {
             placeholder="Contest ID"
             value={selectedContest.contestId}
             onChange={(e) => setSelectedContest({ ...selectedContest, contestId: e.target.value })}
+            required
+          />
+
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="Contest Name"
+            value={selectedContest.contestName}
+            onChange={(e) => setSelectedContest({ ...selectedContest, contestName: e.target.value })}
+            required
+          />
+
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="Contest Rules"
+            value={selectedContest.contestRules}
+            onChange={(e) => setSelectedContest({ ...selectedContest, contestRules: e.target.value })}
+            required
           />
 
           <input
@@ -155,18 +185,18 @@ const Admin: React.FC = () => {
             />
             <span className="ml-2">Active</span>
           </label>
-        <label className='text-white'>No of questions</label>
-        <input
-                className="border text-black p-2 mb-2 w-full"
-                type="number"
-                placeholder="Number of Questions"
-                value={questionCount}
-                min={1}  // Set minimum value to ensure at least one question
-                max={10}  // Set a maximum value if needed
-                step={1}  // Step to increment/decrement by one
-                onChange={handleQuestionCountChange}
-        />
 
+          <label className="text-white">Number of Questions</label>
+          <input
+            className="border text-black p-2 mb-2 w-full"
+            type="number"
+            placeholder="Number of Questions"
+            value={questionCount}
+            min={1}  // Set minimum value to ensure at least one question
+            max={10}  // Set a maximum value if needed
+            step={1}  // Step to increment/decrement by one
+            onChange={handleQuestionCountChange}
+          />
 
           {Array.from({ length: questionCount }).map((_, index) => (
             <select

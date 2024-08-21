@@ -7,6 +7,6 @@ const contestRouter=Router()
 contestRouter.get('/',getAllContests);
 contestRouter.get('/:id',getContestById);
 contestRouter.post('/createContest',createNewContest);
-contestRouter.delete('/:id',deleteContest);
+contestRouter.get('/delete/:id',deleteContest);
 
 export default contestRouter

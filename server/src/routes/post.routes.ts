@@ -1,14 +1,14 @@
 import express from 'express';
 import { createPost, getAllPosts, getPostById, updatePostById, deletePostById } from '../controllers/post.controller.js';
 import replyRouter from "./reply.routes.js";
-const router = express.Router();
+const postRouter = express.Router();
 
-router.post('/posts', createPost);
-router.get('/posts', getAllPosts);
-router.get('/posts/:id', getPostById);
-router.put('/posts/:id', updatePostById);
-router.delete('/posts/:id', deletePostById);
+postRouter.post('/posts', createPost);
+postRouter.get('/posts', getAllPosts);
+postRouter.get('/posts/:id', getPostById);
+postRouter.put('/posts/:id', updatePostById);
+postRouter.delete('/posts/:id', deletePostById);
 
-router.use('/:postId/reply', replyRouter);
+postRouter.use('/:postId/reply', replyRouter);
 
-export default router;
+export default postRouter;

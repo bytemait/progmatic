@@ -12,7 +12,7 @@ import Easter from "./components/Easter";
 import Contest from "./pages/Contest";
 import Userdashboard from "./pages/Userdashboard";
 import Admin from "./pages/Admin";
-
+import AdminQuestion from "./pages/AdminQuestion";
 function App() {
 
   return (
@@ -31,6 +31,7 @@ function App() {
           <Route path="/404" element={<Error404 />} />
           <Route path="/u/:username" element={<Userdashboard />} /> 
           <Route path="/admin" element={<Admin />} /> 
+          <Route path="/adminques" element={<AdminQuestion />} /> 
 
         </Routes>
         <Easter />

@@ -28,7 +28,7 @@ const App: React.FC = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/discussion/posts');
+      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/discussion/posts`);
       setPosts(response.data);
       //if(posts.length===0) setTimeout(() => setErrorMessage('No Post Available Right Now'), 2000);
 
@@ -50,11 +50,11 @@ const App: React.FC = () => {
         title: postTitle,
         description: postDescription,
         username: 'Username', // Replace with actual username
-        date: new Date().toLocaleDateString(),
+        date: new Date().toISOString(), // Converts to ISO format
         category: category, // Use category state
       };
 
-      await axios.post('http://localhost:5000/api/discussion/posts', newPost);
+      await axios.post(`${import.meta.env.VITE_HOST}/api/discussion/posts`, newPost);
       setPostTitle('');
       setPostDescription('');
       setCategory(''); // Clear category input
@@ -71,7 +71,7 @@ const App: React.FC = () => {
 
   const handleDeletePost = async (postId: string) => {
     try {
-      await axios.delete(`http://localhost:5000/api/discussion/posts/${postId}`);
+      await axios.delete(`${import.meta.env.VITE_HOST}/api/discussion/posts/${postId}`);
       fetchPosts(); 
     } catch (error) {
       console.error('Error deleting post:', error);

@@ -12,7 +12,7 @@ export interface postDocument extends Document {
 const PostSchema: Schema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  username: { type: String, ref:'User',required: true },
+  username: { type: String },
   date: { type: Date, default:Date.now,required: true }, 
   category: { type: String, required: true },
   replies: [{ type: Schema.Types.ObjectId, ref: 'Reply' }],

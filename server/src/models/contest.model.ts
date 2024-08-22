@@ -5,7 +5,9 @@ export interface ContestDocument extends Document {
   contestName : string;
   contestRules: string;
   questions: string[];
+  totalQuestions: number;
   gitHubUsername: string[];
+  startTime: Date;
   timeLimit: number;
   participants: string[];
 }
@@ -24,10 +26,17 @@ const ContestSchema: Schema<ContestDocument> = new Schema({
   contestRules: {
     type: String,
     required: true,
-    unique: true,
+  },
+  totalQuestions:{
+    type: Number,
+    required: true,
   },
   questions: {
     type: [String],
+    required: true,
+  },
+  startTime:{
+    type: Date,
     required: true,
   },
   timeLimit: {

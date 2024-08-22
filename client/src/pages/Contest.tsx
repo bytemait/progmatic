@@ -1,15 +1,57 @@
 import ContestCard from "../components/ContestCard";
-import React, { useState } from "react";
 import ContestInfoModal from "../components/ContestInfoModal.tsx";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 type ContestTypes= {
-    
 };
+
+interface Contest {
+    _id: string;
+    contestId: string;
+    contestName: string; // New field for contest name
+    contestRules: string; // Field for contest rules
+    questions: string[]; // Only storing question IDs
+    participants: string[];
+    timeLimit: number;
+    active: boolean;
+  }
+
+
 
 const Contest:React.FC<ContestTypes> = () => {
     
-    const [isActiveButton, setIsActiveButton] = useState('button1');
+    const [isActiveButton, setIsActiveButton] = useState('button2');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [contests, setContests] = useState<Contest[]>([]); // Type your state here
+    //const [contestbyId, setContestbyId] = useState(null);
+
+    useEffect(() => {
+        
+        //fetchContestById('66c5babaf0706e06623b1abd');
+        fetchContests();
+      }, []);
+
+
+    const fetchContests = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_HOST}/api/contests`)
+          setContests(response.data);
+          // console.log(response.data)
+        } catch (error) {
+          console.error('Error fetching contests:', error);
+        }
+      };
+
+    // const fetchContestById = async (id:string) => {
+    // try {
+    //     const response = await axios.get(`${import.meta.env.VITE_HOST}/api/contests/${id}`);
+    //     setContestbyId(response.data)
+    //     console.log('Contest details:', response.data);
+    //     } catch (error) {
+    //     console.error('Error fetching contest details:', error);
+    //     }
+    // };
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -29,13 +71,14 @@ const Contest:React.FC<ContestTypes> = () => {
         <div className="pb-12 bg-[#111010]">
             <div className=" pt-24 text-center">
                 <img src="/trophy.jpg" alt="trophy" className=" h-56 rounded-full mx-auto shadow-sm-light " />
-                <h1 className="mt-2 text-4xl text-light text-center">Progmatic Contest</h1>
-                <p className="mt-1 text-gray-400">Contest contest, contest Contest-Contest. So, contest.</p>
+                <h1 className="mt-2 text-4xl text-light text-center">Progmatic Coding Contests</h1>
+                <p className="mt-1 text-gray-400">Your Skills. Our Stage. Claim the Trophy!</p>
             </div>
-            <div className="flex flex-wrap justify-center mt-8 gap-12">
-                <ContestCard openModal={openModal} />
-                <ContestCard openModal={openModal} />
-            </div>
+            {/* <div className="flex flex-wrap justify-center mt-8 gap-12">
+            {contests.map((contest) => (
+                <><ContestCard key={contest.id} contest={contest} openModal={openModal} /> </>
+            ))}
+            </div> */}
             <div className=" bg-[#262629] shadow-xl mt-16 rounded-xl mx-auto w-2/3 ">
                 <div className=" flex justify-center gap-6 p-4 ">
                     <button 
@@ -65,16 +108,12 @@ const Contest:React.FC<ContestTypes> = () => {
                 </div>
                 <div>
                     <div className={`flex flex-wrap gap-6 p-6 justify-center  ${isActiveButton === 'button1' ? 'visible' : 'hidden'}`}>
-                        <ContestCard openModal={openModal} />
-                        <ContestCard openModal={openModal} />
-                        <ContestCard openModal={openModal} />
-                        <ContestCard openModal={openModal} />
-                        <ContestCard openModal={openModal} />
-                        <ContestCard openModal={openModal} />
+     
                     </div>
                     <div className={`flex flex-wrap gap-6 p-6 justify-center  ${isActiveButton === 'button2' ? 'visible' : 'hidden'}`}>
-                        <ContestCard openModal={openModal} />
-                        <ContestCard openModal={openModal} />
+                    {contests.map((contest: ContestTypes & { contestName: string, _id: string }) => (
+                        <><ContestCard key={contest._id} contest={contest} openModal={openModal} /> </>
+                    ))}
                     </div>
                 </div>
             </div>

@@ -3,19 +3,25 @@ import ContestModel from "../models/contest.model.js";
 import QuestionModel from '../models/question.model.js';
 import UserModel from "../models/user.model.js";
 
-export const getContestById= async (req: any,res: any,next:any): Promise<void>=>{
-    try {
-        const cId=req.params.id;
-        const contest=await ContestModel.findOne({contestId:`${cId}`});
-        if(!contest){
-            throw new ApiError(404,"Contest not found")
-        }
-        return res.status(200).json({contest})
-    } catch (error) {
-        console.log(error);
-        return res.status(404).json({error:"Contest not found"})
-    }
+export const getContestById = async (req: any, res: any, next: any): Promise<void> => {
+  const id = req.params.id; // Extract the ID from request parameters
+  let contest;
+
+  try {
+      // Fetch the contest by ID using findById method
+      contest = await ContestModel.findById(id);
+  } catch (err) {
+      console.log(err);
+      return res.status(500).json({ error: "Error fetching contest" });
+  }
+
+  if (!contest) {
+      return res.status(404).json({ error: "Contest not found" });
+  }
+
+  return res.status(200).json({ contest });
 }
+
 
 export const getAllContests=async (req:any,res:any,next:any):Promise<void>=>{
     try {

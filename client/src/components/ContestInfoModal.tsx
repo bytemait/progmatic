@@ -1,4 +1,6 @@
 function ContestInfoModal({closeModal}:any) {
+
+    
     return (
       <div className="fixed top-0 left-0 pt-20 right-0 bottom-0 flex justify-center items-center bg-[#061220]">
           <div className="px-10 py-6 h-[630px] w-[1150px] bg-dark max-h-[625px] rounded-2xl  shadow-sm-light">

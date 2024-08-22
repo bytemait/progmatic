@@ -1,17 +1,16 @@
-import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from './Store';
+import { Avatar } from 'flowbite-react';
 
-interface SidebarProps {
-  username: string | undefined;
-}
+const Sidebar = () => {
+  const { details } = useSelector((state: RootState) => state.user);
 
-
-const Sidebar: React.FC<SidebarProps> = ({ username }) => {
   return (
     <div className="bg-gray-900 text-white w-64 p-4">
       <div className="flex flex-col md:ml-16 ml-32 items-center">
-        <div className="bg-gray-700  rounded-full w-24 h-24"></div>
-        <h2 className="mt-4 text-xl font-semibold">{username}</h2>
-        <p className="text-sm text-gray-400">user_id</p>
+        <Avatar alt="User" img={details?.avatar_url} rounded size="xl" />
+        <h2 className="mt-4 text-xl font-semibold">{details?.name}</h2>
+        <p className="text-sm text-gray-400">{details?.login}</p>
         <p className="text-sm">he/him</p>
         <p className="mt-2 font-semibold">Rank#123</p>
       </div>

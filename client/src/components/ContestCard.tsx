@@ -1,4 +1,9 @@
-function ContestCard({openModal}:any) {
+interface ContestCardProps {
+  contest: { _id: string; contestName: string; /* other contest properties */ };
+  openModal: any;
+}
+
+const ContestCard: React.FC<ContestCardProps> = ({ contest, openModal }) => {
 
   return (
     <>
@@ -11,10 +16,10 @@ function ContestCard({openModal}:any) {
               </div>
               <div className="text-sm font-semibold">Live Now</div>
             </div>
-            <span className="text-red-700 font-bold ">Daily Contest</span>
+            <span className="text-red-700 font-bold ">Coding Contest</span>
           </div>
           <div className="text-dark pl-8 pt-4">
-            <p className="font-bold text-lg mb-6">Binary Search Contest</p>
+            <p className="font-bold text-lg mb-6">{contest.contestName}</p>
             <div>
               <div className="relative h-8 -ml-1">
                 <img className="w-8 h-8 rounded-full border-2 border-gray-400 absolute ml" src="/avatar.jpg" alt="Avatar 1" />
@@ -22,7 +27,7 @@ function ContestCard({openModal}:any) {
                 <img className="w-8 h-8 rounded-full border-2 border-gray-400 absolute top-0 left-0 ml-12 " src="/avatar.jpg" alt="Avatar 3" />
                 <img className="w-8 h-8 rounded-full border-2 border-gray-400 absolute top-0 left-0 ml-[72px]" src="/avatar.jpg" alt="Avatar 4" />
               </div>
-              <span>+53 participants</span>
+              <span>Join other participants</span>
             </div>
           </div>
         </div>

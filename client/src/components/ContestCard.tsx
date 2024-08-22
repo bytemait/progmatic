@@ -6,7 +6,7 @@ interface ContestCardProps {
 const ContestCard: React.FC<ContestCardProps> = ({ contest, openModal }) => {
 
   return (
-    <>
+    <> 
       <div className="bg-red-700 h-64 w-96 rounded-3xl ml-4 ">
         <div className="bg-gray-300 h-52 w-96 pt-6 rounded-3xl">
           <div className="flex justify-between pr-4 items-center">
@@ -31,7 +31,9 @@ const ContestCard: React.FC<ContestCardProps> = ({ contest, openModal }) => {
             </div>
           </div>
         </div>
-        <p className="text-center pt-2 font-bold"><button onClick={openModal} >Register & view details</button></p>
+        <p className="text-center pt-2 font-bold"><button onClick={() => openModal(contest)}>
+            Register & view details
+          </button></p>
       </div>
       
     </>

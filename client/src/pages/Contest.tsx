@@ -10,9 +10,11 @@ interface Contest {
     _id: string;
     contestId: string;
     contestName: string; // New field for contest name
-    contestRules: string; // Field for contest rules
+    contestRules: string;
+    totalQuestions: number,
     questions: string[]; // Only storing question IDs
     participants: string[];
+    startTime : number;
     timeLimit: number;
     active: boolean;
   }
@@ -24,6 +26,8 @@ const Contest:React.FC<ContestTypes> = () => {
     const [isActiveButton, setIsActiveButton] = useState('button2');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [contests, setContests] = useState<Contest[]>([]); // Type your state here
+    const [selectedContest, setSelectedContest] = useState<any>(null);
+
     //const [contestbyId, setContestbyId] = useState(null);
 
     useEffect(() => {
@@ -53,12 +57,13 @@ const Contest:React.FC<ContestTypes> = () => {
     //     }
     // };
 
-    const openModal = () => {
+    const openModal = (contest: any) => {
+        setSelectedContest(contest);
         setIsModalOpen(true);
-        // document.body.classList.add('overflow-hidden');
-    };
+      };
     
     const closeModal = () => {
+        setSelectedContest(null);
         setIsModalOpen(false);
         // document.body.classList.remove('overflow-hidden');
     };
@@ -112,13 +117,27 @@ const Contest:React.FC<ContestTypes> = () => {
                     </div>
                     <div className={`flex flex-wrap gap-6 p-6 justify-center  ${isActiveButton === 'button2' ? 'visible' : 'hidden'}`}>
                     {contests.map((contest: ContestTypes & { contestName: string, _id: string }) => (
-                        <><ContestCard key={contest._id} contest={contest} openModal={openModal} /> </>
+                        <><ContestCard key={contest._id} contest={contest} openModal={() => openModal(contest)} 
+                        /> </>
                     ))}
                     </div>
                 </div>
             </div>
 
-            {isModalOpen && <ContestInfoModal closeModal={closeModal} />}
+            {/* {isModalOpen && ( // Assert isModalOpen to be a boolean
+            contests.map((contest: ContestTypes & { contestName: string; timeLimit: number ,_id: string}) => (
+            <>
+
+                <ContestInfoModal key={contest._id} contest={contest} closeModal={closeModal} /> 
+            </>
+        ))
+)} */}
+    {isModalOpen && selectedContest && (
+        <ContestInfoModal 
+          contest={selectedContest} 
+          closeModal={closeModal} 
+        />
+      )}
         </div>
     )
     

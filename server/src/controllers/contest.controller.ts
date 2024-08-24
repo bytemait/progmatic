@@ -39,7 +39,7 @@ export const getAllContests=async (req:any,res:any,next:any):Promise<void>=>{
 
 export const createNewContest = async (req: any, res: any, next: any): Promise<void> => {
   try {
-    const { contestId, contestName, contestRules, questionIds, participantIds, timeLimit } = req.body;
+    const { contestId, contestName, contestRules,totalQuestions, questionIds, participantIds,startTime, timeLimit } = req.body;
 
     // Validate question IDs (optional)
      const questions = await QuestionModel.find({ _id: { $in: questionIds } });
@@ -57,8 +57,10 @@ export const createNewContest = async (req: any, res: any, next: any): Promise<v
       contestId,
       contestName,
       contestRules,
+      totalQuestions,
       questions,// Array of question objects
       participants,
+      startTime,
       //extract github username from user model data
       // gitHubUsername: participants.map(user => user.gitHubUsername),
       //gitHubUsername,

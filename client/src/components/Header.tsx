@@ -1,21 +1,17 @@
 /* eslint-disable no-inner-declarations */
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import { Avatar, Dropdown, Navbar } from "flowbite-react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import axios, { AxiosResponse } from "axios";
-
-interface UserData {
-  avatar_url: string;
-  login: string;
-  email: string;
-  html_url: string;
-}
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from './Store';
+import { login, logout } from './slices/userSlice';
 
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const dispatch = useDispatch();
+  const { isLoggedIn, details } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const queryString = window.location.search;
@@ -31,7 +27,6 @@ export default function Header() {
           console.log(response.data);
           if (response.data.access_token) {
             localStorage.setItem("accessToken", response.data.access_token);
-            setIsLoggedIn(true);
             navigate("/");
             window.location.reload();
           }
@@ -50,8 +45,9 @@ export default function Header() {
           },
         })
         .then((data) => {
-          setUserData(data.data);          
-          setIsLoggedIn(true);
+          // setUserData(data.data);
+          console.log(data.data);          
+          dispatch(login(data.data));
         });
     }
     if (localStorage.getItem("accessToken")) {
@@ -68,7 +64,7 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
-    setIsLoggedIn(false);
+    dispatch(logout());
     navigate("/");
   };
 
@@ -84,19 +80,19 @@ export default function Header() {
           <Dropdown
             arrowIcon={false}
             inline
-            label={<Avatar alt="User" img={userData?.avatar_url} rounded />}
+            label={<Avatar alt="User" img={details?.avatar_url} rounded />}
           >
             <Dropdown.Header>
-              <a href={userData?.html_url} target="_blank">
+              <a href={details?.html_url} target="_blank">
                 <span className="block text-md font-bold hover:underline">
-                  {userData?.login}
+                  {details?.login}
                 </span>
               </a>
               <span className="block truncate text-sm font-medium">
-                {userData?.email}
+                {details?.email}
               </span>
             </Dropdown.Header>
-            <Link to={`/u/${userData?.login}`}>
+            <Link to={`/dashboard`}>
               <Dropdown.Item>Dashboard</Dropdown.Item>
             </Link>
             <Dropdown.Divider />

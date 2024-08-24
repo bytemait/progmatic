@@ -29,7 +29,7 @@ function App() {
           <Route path="/learn" element={<Learn />} />
           <Route path="*" element={<Navigate to="/404" />} />
           <Route path="/404" element={<Error404 />} />
-          <Route path="/u/:username" element={<Userdashboard />} /> 
+          <Route path="/dashboard" element={<Userdashboard />} /> 
           <Route path="/admin" element={<Admin />} /> 
           <Route path="/adminques" element={<AdminQuestion />} /> 
 

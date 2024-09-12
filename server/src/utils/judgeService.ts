@@ -67,3 +67,59 @@ export const submitCode = async (sourceCode: string, languageId: number, program
         throw error;
     }
 };
+
+export const submitCodeWithTestCase = async (
+  sourceCode: string,
+  languageId: number,
+  programInput: string,
+  expectedOutput: string
+): Promise<Judge0Response> => {
+  const encodedSource = Buffer.from(sourceCode).toString('base64');
+  const encodedInput = Buffer.from(programInput).toString('base64');
+  const encodedExpectedOutput = Buffer.from(expectedOutput).toString('base64');
+
+  try {
+    const { data } = await axios.post(`${apiurl}/submissions`, {
+      source_code: encodedSource,
+      language_id: languageId,
+      stdin: encodedInput,
+      expected_output: encodedExpectedOutput,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-RapidAPI-Key': apikey,
+        'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
+      },
+      params: {
+        base64_encoded: 'true',
+        fields: '*',
+      }
+    });
+
+    // Polling the status until the code execution is complete
+    let { data: resultData } = await axios.get(`${apiurl}/submissions/${data.token}`, {
+      headers: {
+        'X-RapidAPI-Key': apikey,
+        'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
+      },
+      params: { base64_encoded: 'true' },
+    });
+
+    while (resultData.status.id === 2) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const { data: tempData } = await axios.get(`${apiurl}/submissions/${data.token}`, {
+        headers: {
+          'X-RapidAPI-Key': apikey,
+          'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
+        },
+        params: { base64_encoded: 'true' },
+      });
+      resultData = tempData;
+    }
+
+    return resultData;
+  } catch (error) {
+    console.error('Error submitting code:', error);
+    throw error;
+  }
+};

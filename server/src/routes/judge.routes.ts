@@ -1,8 +1,9 @@
 import express from 'express';
-import { handleCodeSubmission } from '../controllers/judge.controller.js';
+import { handleCodeSubmission, handleCodeSubmissionWithTestCase } from '../controllers/judge.controller.js';
 
 const router = express.Router();
 
-router.post('/submit-code', handleCodeSubmission);
+router.post('/run-code', handleCodeSubmission);
+router.post('/submit-code', handleCodeSubmissionWithTestCase);
 
 export default router;

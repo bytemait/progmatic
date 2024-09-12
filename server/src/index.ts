@@ -7,14 +7,15 @@ import mongoose from "mongoose";
 import questionRouter from "./routes/question.routes.js";
 import contestRouter from "./routes/contest.routes.js";
 import UserModel from "./models/user.model.js";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
 import { check } from "express-validator";
 import leaderboardRouter from "./routes/leaderboard.routes.js";
 import submissionRouter from "./routes/submission.routes.js";
 import postRouter from "./routes/post.routes.js";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+import judgeRouter from './routes/judge.routes.js';
 
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
@@ -38,8 +39,10 @@ app.use("/api/contests", contestRouter);
 app.use("/api/leaderboard",leaderboardRouter)
 app.use("/api/submission", submissionRouter)
 app.use("/api/discussion",postRouter)
+app.use("/api/judge",judgeRouter)
+
 app.get("/", (req, res) => {
-  res.send("CORS Server Running!");
+  res.send({success: true, message: "cors server up!"});
 });
 
 app.get("/getAccessToken", async function (req, res) {

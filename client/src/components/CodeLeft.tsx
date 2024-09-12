@@ -13,6 +13,7 @@ const languageMapping: LanguageMapping = {
   "python": 71,
   "javascript": 63
 };
+
 const handleResult = (resultData: any) => {
   if (resultData.status.id != 3) {
     return `There is an error in code. \n${atob(resultData.compile_output)}`;
@@ -23,6 +24,7 @@ const CodeLeft: React.FC = () => {
   const [language, setLanguage] = useState("cpp");
   const editorRef = useRef<any>(null);
   const apikey = import.meta.env.VITE_JUDGE0_API_KEY;
+  const backendUrl = import.meta.env.VITE_HOST;
   const {setProgramOutput, programInput} = useSharedState();
 
   const handleEditorDidMount = (editor: any) => {
@@ -35,59 +37,28 @@ const CodeLeft: React.FC = () => {
     // console.log('Monaco instance:', monaco);
     // });
   }, [])
-  
+
   const runCode = async () => {
     if (editorRef.current) {
       const sourceCode = editorRef.current.getValue();
       const languageId = languageMapping[language];
-      setRunStatus("Submitting Code...")
+      setRunStatus("Submitting Code...");
+  
       try {
-        const { data } = await axios.post('https://judge0-ce.p.rapidapi.com/submissions', {
-          source_code: btoa(sourceCode),
-          language_id: languageId,
-          stdin: btoa(programInput.current),
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-RapidAPI-Key': apikey,
-            'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-          },
-          params: {
-            base64_encoded: 'true',
-            fields: '*'
-          }
+        const { data } = await axios.post(`${backendUrl}/api/judge/submit-code`, {
+          sourceCode,
+          languageId,
+          programInput: programInput.current,
         });
-
-        // Check the status of the code execution every 2 seconds if the status is 2.
-
-        let { data: resultData } = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/${data.token}`, {
-          headers: {
-            'X-RapidAPI-Key': apikey,
-            'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-          },
-          params: { base64_encoded: 'true' }
-        });
-
-        setRunStatus("Running code...");
-        while(resultData.status.id === 2) {
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          const { data: tempData } = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/${data.token}`, {
-            headers: {
-              'X-RapidAPI-Key': apikey,
-              'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-            },
-            params: { base64_encoded: 'true' }
-          });
-          resultData = tempData;
-        }
-        setRunStatus(handleResult(resultData));
+  
+        setRunStatus(handleResult(data));
       } catch (error) {
         console.error('Failed to execute code:', error);
         setRunStatus("Failed to execute code.");
       }
     }
   };
-
+  
   const setSubmissionStatus = async (val: string) => {
     setProgramOutput("Submission Status: \n" + val);
   };

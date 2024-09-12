@@ -21,7 +21,7 @@ const handleResult = (resultData: any) => {
   return resultData.stdout ? atob(resultData.stdout) : "There is no output.";
 }
 const CodeLeft: React.FC = () => {
-  const [language, setLanguage] = useState("cpp");
+  const [language, setLanguage] = useState("java");
   const editorRef = useRef<any>(null);
   const apikey = import.meta.env.VITE_JUDGE0_API_KEY;
   const backendUrl = import.meta.env.VITE_HOST;
@@ -72,66 +72,7 @@ const CodeLeft: React.FC = () => {
     }
   }
 
-  // const submitCode = async () => {
-  //   if (editorRef.current) {
-  //     const sourceCode = editorRef.current.getValue();
-  //     const languageId = languageMapping[language];
-  //     setSubmissionStatus("Submitting Code...")
-  //     try {
-  //       const { data } = await axios.post('https://judge0-ce.p.rapidapi.com/submissions', {
-  //         source_code: btoa(sourceCode),
-  //         language_id: languageId,
-  //         stdin: btoa('4\n1\n2\n3\n4\n'), // This is a sample input for the question. We can change it to the actual input.
-  //         expected_output: btoa('1\n2\n6\n24'),
-  //       }, {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'X-RapidAPI-Key': apikey,
-  //           'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-  //         },
-  //         params: {
-  //           base64_encoded: 'true',
-  //           fields: '*'
-  //         }
-  //       });
-
-  //       // Check the status of the code execution every 2 seconds if the status is 2.
-
-  //       let { data: resultData } = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/${data.token}`, {
-  //         headers: {
-  //           'X-RapidAPI-Key': apikey,
-  //           'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-  //         },
-  //         params: { base64_encoded: 'true' }
-  //       });
-
-  //       setSubmissionStatus("Submitting code...");
-  //       while(resultData.status.id === 2) {
-  //         await new Promise(resolve => setTimeout(resolve, 2000));
-  //         const { data: tempData } = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/${data.token}`, {
-  //           headers: {
-  //             'X-RapidAPI-Key': apikey,
-  //             'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
-  //           },
-  //           params: { base64_encoded: 'true' }
-  //         });
-  //         resultData = tempData;
-  //       }
-  //       if (resultData.status.id === 3) {
-  //         setSubmissionStatus("Accepted the test case");
-  //       }
-  //       else {
-  //         setSubmissionStatus("Failed the test case");
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to execute code:', error);
-  //       setSubmissionStatus("Failed to execute code.");
-  //     }
-
-  //   }
-  // };
-
-  const submitCode = async () => {
+ const submitCode = async () => {
     if (editorRef.current) {
       const sourceCode = editorRef.current.getValue();
       const languageId = languageMapping[language];

@@ -31,7 +31,8 @@ const Admin: React.FC = () => {
 
   const fetchContests = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/contests`);
+      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/contests/`);
+      console.log(response.data)
       setContests(response.data);
     } catch (error) {
       console.error('Error fetching contests:', error);
@@ -40,7 +41,7 @@ const Admin: React.FC = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/questions`);
+      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/question/`);
       setQuestions(response.data);
     } catch (error) {
       console.error('Error fetching questions:', error);

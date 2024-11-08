@@ -23,7 +23,7 @@ const handleResult = (resultData: any) => {
 const CodeLeft: React.FC = () => {
   const [language, setLanguage] = useState("java");
   const editorRef = useRef<any>(null);
-  const apikey = import.meta.env.VITE_JUDGE0_API_KEY;
+  // const apikey = import.meta.env.VITE_JUDGE0_API_KEY;
   const backendUrl = import.meta.env.VITE_HOST;
   const { setProgramOutput, programInput } = useSharedState();
 

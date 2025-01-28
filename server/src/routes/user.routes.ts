@@ -1,14 +1,14 @@
 import express from "express";
 import {
   addParticipant,
-  fetchContest,
+  fetchMyContest,
   startAttempt,
 } from "../controllers/user.controller.js";
 
-const router = express.Router();
+const userRouter = express.Router();
 
-router.post("/register", addParticipant);
-router.get("/dashboard/:gitHubUsername", fetchContest);
-router.post("/attempt/:contestId", startAttempt); //TODO
+userRouter.post("/register", addParticipant);
+userRouter.get("/dashboard/:user", fetchMyContest);
+userRouter.post("/attempt/:contestId", startAttempt); //TODO
 
-export default router;
+export default userRouter;

@@ -1,35 +1,38 @@
 import ContestModel from "../models/contest.model.js";
 import UserModel from "../models/user.model.js";
+import { Request, Response } from 'express';
 
 export const addParticipant = async (
-  req: any,
-  res: any,
+  req: Request,
+  res: Response,
   next: any
 ): Promise<void> => {
   const { user, contestId } = req.body;
 
   try {
-    const contest = await ContestModel.findOne({ contestId });
+    const contest = await ContestModel.findById(contestId);
     if (!contest) {
-      return res.status(404).json({ success: false, message: "Contest not found" });
+      res.status(404).json({ success: false, message: "Contest not found" });
+      return;
     }
 
     if (contest.participants.includes(user)) {
-      return res.status(400).json({ success: false, message: "Participant already added" });
+      res.status(400).json({ success: false, message: "Participant already added" });
+      return;
     }
 
     const participant = await UserModel.findOne({ gitHubUsername: user });
 
     if (!participant) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      res.status(404).json({ success: false, message: "User not found" });
+      return;
     }
 
     contest.participants.push(user);
-    user.myContests.push(contestId);
-
-    await user.save();
-
     await contest.save();
+
+    participant.myContests.push(contestId);
+    await participant.save();
 
     res.status(200).json({ success: true, message: "Participant added successfully" });
   } catch (error) {
@@ -37,24 +40,28 @@ export const addParticipant = async (
   }
 };
 
-export const fetchContest = async (
-  req: any,
-  res: any,
+export const fetchMyContest = async (
+  req: Request,
+  res: Response,
   next: any
 ): Promise<void> => {
-  const { gitHubUsername } = req.params;
+  const { user } = req.params;
 
   try {
-    const contests = await ContestModel.find({ participants: gitHubUsername });
-    res.status(200).json(contests);
+    const contests = await ContestModel.find({ participants: user });
+    if (!contests.length) {
+      res.status(404).json({ success: false, message: "No contests found for this user" });
+      return;
+    }
+    res.status(200).json({ success: true, contests });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching contests", error });
+    res.status(500).json({ success: false, message: "Error fetching contests", error });
   }
 };
 
 export const startAttempt = async (
-  req: any,
-  res: any,
+  req: Request,
+  res: Response,
   next: any
 ): Promise<void> => {
   const { contestId } = req.params;
@@ -63,13 +70,20 @@ export const startAttempt = async (
   try {
     const contest = await ContestModel.findOne({ contestId });
     if (!contest) {
-      return res.status(404).json({ message: "Contest not found" });
+      res.status(404).json({ success: false, message: "Contest not found" });
+      return; // Added return to prevent further execution
     }
 
-    // TODO: add logic to see if user started attempt (palle nahi padh raha ye)
+    const participant = await UserModel.findOne({ gitHubUsername });
+    if (!participant) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return; // Added return to prevent further execution
+    }
 
-    res.status(200).json({ message: "Contest attempt started successfully" });
+    // TODO: add logic to see if user started attempt
+
+    res.status(200).json({ success: true, message: "Contest attempt started successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error starting contest attempt", error });
+    res.status(500).json({ success: false, message: "Error starting contest attempt", error });
   }
 };

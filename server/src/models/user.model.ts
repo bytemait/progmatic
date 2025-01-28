@@ -6,6 +6,7 @@ export interface UserDocument extends Document {
   profilePhoto: string;
   role: string;
   contests: number;
+  myContests: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,10 +15,12 @@ const UserSchema: Schema<UserDocument> = new Schema(
   {
     gitHubUsername: {
       type: String,
+      unique: true,
       required: true,
     },
     accessToken: {
       type: String,
+      unique: true,
       required: true,
     },
     profilePhoto: {
@@ -33,6 +36,11 @@ const UserSchema: Schema<UserDocument> = new Schema(
       type: Number,
       default: 0,
     },
+    myContests: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Contest',
+      default: [],
+    }],
   },
 
   {

@@ -7,6 +7,8 @@ import {
 
 const router = express.Router();
 
-router.post("/:contestId/participants", addParticipant);
+router.post("/register", addParticipant);
 router.get("/dashboard/:gitHubUsername", fetchContest);
 router.post("/attempt/:contestId", startAttempt); //TODO
+
+export default router;

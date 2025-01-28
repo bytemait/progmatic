@@ -1,30 +1,39 @@
-import express from "express";
 import ContestModel from "../models/contest.model.js";
+import UserModel from "../models/user.model.js";
 
 export const addParticipant = async (
   req: any,
   res: any,
   next: any
 ): Promise<void> => {
-  const { contestId } = req.params;
-  const { participantName } = req.body;
+  const { user, contestId } = req.body;
 
   try {
     const contest = await ContestModel.findOne({ contestId });
     if (!contest) {
-      return res.status(404).json({ message: "Contest not found" });
+      return res.status(404).json({ success: false, message: "Contest not found" });
     }
 
-    if (contest.participants.includes(participantName)) {
-      return res.status(400).json({ message: "Participant already added" });
+    if (contest.participants.includes(user)) {
+      return res.status(400).json({ success: false, message: "Participant already added" });
     }
 
-    contest.participants.push(participantName);
+    const participant = await UserModel.findOne({ gitHubUsername: user });
+
+    if (!participant) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    contest.participants.push(user);
+    user.myContests.push(contestId);
+
+    await user.save();
+
     await contest.save();
 
-    res.status(200).json({ message: "Participant added successfully" });
+    res.status(200).json({ success: true, message: "Participant added successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error adding participant", error });
+    res.status(500).json({ success: false, message: "Error adding participant", error });
   }
 };
 

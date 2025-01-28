@@ -43,10 +43,11 @@ const ContestSchema: Schema<ContestDocument> = new Schema({
     type: Number,
     required: true,
   },
-  participants: {
-    type: [String],
+  participants: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     default: [],
-  },
+  }],
 });
 
 const ContestModel = mongoose.model<ContestDocument>("Contest", ContestSchema);

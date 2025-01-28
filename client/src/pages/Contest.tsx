@@ -40,8 +40,8 @@ const Contest:React.FC<ContestTypes> = () => {
     const fetchContests = async () => {
         try {
           const response = await axios.get(`${import.meta.env.VITE_HOST}/api/contests`)
+          console.log(response.data)
           setContests(response.data);
-          // console.log(response.data)
         } catch (error) {
           console.error('Error fetching contests:', error);
         }

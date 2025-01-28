@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm install typescript && npx tsc",
     "start": "tsc && node dist/index.js",
-    "dev": "tsc && nodemon dist/index.js",
+    "dev": "nodemon src/index.js",
     "serve": "concurrently \"tsc -w\" \"nodemon dist/index.js\""
   },
   "keywords": [],
@@ -23,7 +23,8 @@
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.1",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",

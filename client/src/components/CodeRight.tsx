@@ -1,29 +1,23 @@
-import { useSharedState } from './SharedStateContext';
-import Split from '@uiw/react-split';
-const CodeRight: React.FC = () => {
-  const { programOutput } = useSharedState();
-  const {programInput} = useSharedState();
+import { useSharedState } from "./SharedStateContext";
 
-// <div className="pt-20 text-black bg-white	">
-//    Output: <pre>{programOutput}</pre>
-// </div>
-// </div>
+const CodeRight: React.FC = () => {
+  const { programOutput, programInput } = useSharedState();
 
   return (
-    <div style={{width:'100%', height:'100%'}} className="text-black">
-      <Split mode='vertical'>
-      <div style={{height:'50%'}} >
+    <div className="p-2">
+      <div className="flex flex-col h-full">
+        {/* Input Section */}
         <textarea
-          className="w-full p-2"
-          style={{height: '100%', resize: 'none'}}
-          placeholder="Enter input here"
-          onChange={(e) => programInput.current = e.target.value}
+          className="w-full p-2 border rounded h-1/2 resize-none"
+          placeholder="Enter input here..."
+          onChange={(e) => (programInput.current = e.target.value)}
         />
+
+        {/* Output Section */}
+        <div className="bg-gray-100 border rounded h-1/2 p-2 overflow-auto">
+          <pre>{programOutput}</pre>
+        </div>
       </div>
-      <div style={{height:'50%'}} className="pl-2 bg-white">
-        <pre>{programOutput}</pre>
-      </div>
-      </Split>
     </div>
   );
 };

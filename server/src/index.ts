@@ -17,6 +17,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import judgeRouter from './routes/judge.routes.js';
 import userRouter from './routes/user.routes.js';
+import cookieParser from "cookie-parser";
+
 
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
@@ -26,11 +28,15 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin:"http://localhost:5173",
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS',],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,  // Allow cookies in cross-origin requests
   })
 );
+
+// Use cookie-parser middleware to parse cookies
+app.use(cookieParser());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -79,22 +85,24 @@ app.get("/getAccessToken", async function (req, res) {
 
     const userData = userResponse.data;
 
-    /**
-     * userData.login contains gh username which is a unique entity
-     * and canbe used for verification
-     */
-    const checkUser = await UserModel.findOne({
+    let user = await UserModel.findOne({
       gitHubUsername: userData.login,
     });
 
     //checking if user already exists, if they exist return access token immediately
-    if (checkUser) {
+    if (user) {
+      // Update the user's access token if it has changed
+      user.accessToken = access_token;
+
+      await user.save();
+
       return res
         .status(200)
         .json({ message: "Welcome! Repeat user", access_token });
     }
 
-    const user = new UserModel({
+  // If the user doesn't exist, create a new user
+    user = new UserModel({
       gitHubUsername: userData.login,
       accessToken: access_token,
       profilePhoto: userData.avatar_url,
@@ -102,6 +110,14 @@ app.get("/getAccessToken", async function (req, res) {
     });
 
     await user.save();
+
+    res.cookie("access_token", access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",  
+      sameSite: "lax", // Prevent CSRF
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: "/", // Ensure the cookie is accessible on the entire site
+    });
 
     res.json({
       message: "User authenticated and saved successfully",
@@ -116,7 +132,7 @@ app.get("/getAccessToken", async function (req, res) {
 
 app.get("/getUserData", async (req, res) => {
   //receiving token from client side Authorization field.
-  const token = req.get("Authorization");
+  const token = req.cookies.access_token || req.get("Authorization");
 
   if (!token) {
     console.log("Token missing");

@@ -49,10 +49,10 @@ const QuestionAdmin: React.FC = () => {
       try {
         if (selectedQuestion._id) {
           // Update Question
-          await axios.put(`${import.meta.env.VITE_HOST}/api/question/update/${selectedQuestion._id}`, selectedQuestion);
+          await axios.put(`${import.meta.env.VITE_HOST}/api/question/update/${selectedQuestion._id}`, selectedQuestion, {withCredentials: true,});
         } else {
           // Create Question
-          await axios.post(`${import.meta.env.VITE_HOST}/api/question/add`, selectedQuestion);
+          await axios.post(`${import.meta.env.VITE_HOST}/api/question/add`, selectedQuestion, {withCredentials: true});
         }
         fetchQuestions();
         setSelectedQuestion(null);

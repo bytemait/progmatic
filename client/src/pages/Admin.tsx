@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 interface Question {
   _id: string;
@@ -31,22 +31,34 @@ const Admin: React.FC = () => {
 
   const fetchContests = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/contests/`);
-      console.log(response.data)
+      const response = await axios.get(
+        `${import.meta.env.VITE_HOST}/api/contests/`
+      );
+      console.log(response.data);
       setContests(response.data);
     } catch (error) {
-      console.error('Error fetching contests:', error);
+      console.error("Error fetching contests:", error);
     }
   };
 
+  
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_HOST}/api/question/`);
-      setQuestions(response.data);
+      console.log("Fetched Questions:", response.data); 
+      
+      if (response.data && Array.isArray(response.data.questions)) {
+        setQuestions(response.data.questions); // Extract the questions array properly
+      } else {
+        console.error("Invalid data format received for questions:", response.data);
+        setQuestions([]); 
+      }
     } catch (error) {
-      console.error('Error fetching questions:', error);
+      console.error("Error fetching questions:", error);
+      setQuestions([]); 
     }
   };
+  
 
   const handleContestCreateOrUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,15 +66,21 @@ const Admin: React.FC = () => {
       try {
         if (selectedContest._id) {
           // Update Contest
-          await axios.put(`${import.meta.env.VITE_HOST}/api/contests/${selectedContest._id}`, selectedContest);
+          await axios.put(
+            `${import.meta.env.VITE_HOST}/api/contests/${selectedContest._id}`,
+            selectedContest
+          );
         } else {
           // Create Contest
-          await axios.post(`${import.meta.env.VITE_HOST}/api/contests/createContest`, selectedContest);
+          await axios.post(
+            `${import.meta.env.VITE_HOST}/api/contests/createContest`,
+            selectedContest
+          );
         }
         fetchContests();
         setSelectedContest(null);
       } catch (error) {
-        console.error('Error saving contest:', error);
+        console.error("Error saving contest:", error);
       }
     }
   };
@@ -70,26 +88,47 @@ const Admin: React.FC = () => {
   const handleQuestionChange = (index: number, questionId: string) => {
     if (selectedContest) {
       const updatedQuestions = [...selectedContest.questions];
-      updatedQuestions[index] = questionId;
+      updatedQuestions[index] = questionId; // Set the selected question ID 
       setSelectedContest({ ...selectedContest, questions: updatedQuestions });
     }
   };
 
   const handleQuestionCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const count = parseInt(e.target.value) || 0;
-    setQuestionCount(count);
-    if (selectedContest) {
-      const updatedQuestions = new Array(count).fill('');
-      setSelectedContest({ ...selectedContest, questions: updatedQuestions });
+    const value = e.target.value;
+  
+    // Allow backspace to clear input
+    if (value === "") {
+      setQuestionCount(0);
+      return;
     }
+  
+    const count = Math.max(1, parseInt(value, 10) || 1);
+    setQuestionCount(count);
+  
+    if (!selectedContest) return; // Avoid null value error
+  
+    // Ensure the selectedContest.questions array has enough items for the count
+    const updatedQuestions = [...selectedContest.questions];
+  
+    // Adjust the array size based on the count
+    if (updatedQuestions.length < count) {
+      while (updatedQuestions.length < count) {
+        updatedQuestions.push("");
+      }
+    } else {
+      updatedQuestions.length = count;
+    }
+  
+    // Update the selected contest with the modified question array
+    setSelectedContest({ ...selectedContest, questions: updatedQuestions });
   };
-
+  
   const handleContestDelete = async (id: string) => {
     try {
       await axios.get(`${import.meta.env.VITE_HOST}/api/contests/delete/${id}`);
       fetchContests();
     } catch (error) {
-      console.error('Error deleting contest:', error);
+      console.error("Error deleting contest:", error);
     }
   };
 
@@ -123,10 +162,10 @@ const Admin: React.FC = () => {
           className="bg-green-500 text-white px-2 py-1 rounded mt-2"
           onClick={() =>
             setSelectedContest({
-              _id: '',
-              contestId: '',
-              contestName: '',
-              contestRules: '',
+              _id: "",
+              contestId: "",
+              contestName: "",
+              contestRules: "",
               questions: [],
               participants: [],
               timeLimit: 0,
@@ -141,14 +180,21 @@ const Admin: React.FC = () => {
       {/* Contest Form */}
       {selectedContest && (
         <form onSubmit={handleContestCreateOrUpdate}>
-          <h2 className="text-xl font-semibold mb-4">{selectedContest._id ? 'Edit Contest' : 'Add Contest'}</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {selectedContest._id ? "Edit Contest" : "Add Contest"}
+          </h2>
 
           <input
             className="border p-2 mb-2 text-black w-full"
             type="text"
             placeholder="Contest ID"
             value={selectedContest.contestId}
-            onChange={(e) => setSelectedContest({ ...selectedContest, contestId: e.target.value })}
+            onChange={(e) =>
+              setSelectedContest({
+                ...selectedContest,
+                contestId: e.target.value,
+              })
+            }
             required
           />
 
@@ -157,7 +203,12 @@ const Admin: React.FC = () => {
             type="text"
             placeholder="Contest Name"
             value={selectedContest.contestName}
-            onChange={(e) => setSelectedContest({ ...selectedContest, contestName: e.target.value })}
+            onChange={(e) =>
+              setSelectedContest({
+                ...selectedContest,
+                contestName: e.target.value,
+              })
+            }
             required
           />
 
@@ -166,7 +217,12 @@ const Admin: React.FC = () => {
             type="text"
             placeholder="Contest Rules"
             value={selectedContest.contestRules}
-            onChange={(e) => setSelectedContest({ ...selectedContest, contestRules: e.target.value })}
+            onChange={(e) =>
+              setSelectedContest({
+                ...selectedContest,
+                contestRules: e.target.value,
+              })
+            }
             required
           />
 
@@ -175,14 +231,24 @@ const Admin: React.FC = () => {
             type="number"
             placeholder="Time Limit"
             value={selectedContest.timeLimit}
-            onChange={(e) => setSelectedContest({ ...selectedContest, timeLimit: parseInt(e.target.value) })}
+            onChange={(e) =>
+              setSelectedContest({
+                ...selectedContest,
+                timeLimit: parseInt(e.target.value),
+              })
+            }
           />
 
           <label className="flex items-center mb-4">
             <input
               type="checkbox"
               checked={selectedContest.active}
-              onChange={(e) => setSelectedContest({ ...selectedContest, active: e.target.checked })}
+              onChange={(e) =>
+                setSelectedContest({
+                  ...selectedContest,
+                  active: e.target.checked,
+                })
+              }
             />
             <span className="ml-2">Active</span>
           </label>
@@ -193,9 +259,9 @@ const Admin: React.FC = () => {
             type="number"
             placeholder="Number of Questions"
             value={questionCount}
-            min={1}  // Set minimum value to ensure at least one question
-            max={10}  // Set a maximum value if needed
-            step={1}  // Step to increment/decrement by one
+            min={1} // Set minimum value to ensure at least one question
+            max={10} // Set a maximum value if needed
+            step={1} // Step to increment/decrement by one
             onChange={handleQuestionCountChange}
           />
 
@@ -203,20 +269,26 @@ const Admin: React.FC = () => {
             <select
               key={index}
               className="border text-black p-2 mb-2 w-full"
-              value={selectedContest.questions[index] || ''}
+              value={selectedContest.questions[index] || ""}
               onChange={(e) => handleQuestionChange(index, e.target.value)}
             >
-              <option value="">Select Question</option>
-              {questions.map((question) => (
-                <option key={question._id} value={question._id}>
-                  {question.questionName}
-                </option>
-              ))}
+              {Array.isArray(questions) && questions.length > 0 ? (
+                questions.map((question) => (
+                  <option key={question._id} value={question._id}>
+                    {question.questionName}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No questions available</option>
+              )}
             </select>
           ))}
 
-          <button className="bg-blue-500 text-white px-4 py-2 rounded" type="submit">
-            {selectedContest._id ? 'Update Contest' : 'Create Contest'}
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+            type="submit"
+          >
+            {selectedContest._id ? "Update Contest" : "Create Contest"}
           </button>
         </form>
       )}

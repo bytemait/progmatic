@@ -43,27 +43,19 @@ export const createNewContest = async (req: any, res: any, next: any): Promise<v
 
     // Validate question IDs (optional)
      const questions = await QuestionModel.find({ _id: { $in: questionIds } });
-    // if (questions.length !== questionIds.length) {
-    //   return res.status(400).json({ error: 'One or more questions not found' });
-    // }
 
     // Validate participant IDs
      const participants = await UserModel.find({ _id: { $in: participantIds } });
-    // if (participants.length !== participantIds.length) {
-    //   return res.status(400).json({ error: 'One or more participants not found' });
-    // }
+    
 
     const newContest = await ContestModel.create({
       contestId,
       contestName,
       contestRules,
       totalQuestions,
-      questions,// Array of question objects
+      questions,
       participants,
       startTime,
-      //extract github username from user model data
-      // gitHubUsername: participants.map(user => user.gitHubUsername),
-      //gitHubUsername,
       timeLimit,
     });
 
@@ -79,7 +71,7 @@ export const deleteContest = async (req: any, res: any, next: any): Promise<void
     const contestId = req.params.id;
     console.log(contestId);
     
-    const contest = await ContestModel.findById( contestId );
+    const contest = await ContestModel.findById(contestId);
     if (!contest) {
       throw new ApiError(404, "Contest not found");
     }

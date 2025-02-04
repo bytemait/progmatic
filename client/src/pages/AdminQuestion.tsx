@@ -36,7 +36,7 @@ const QuestionAdmin: React.FC = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/question');
+      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/question/`);
       setQuestions(response.data.questions);
     } catch (error) {
       console.error('Error fetching questions:', error);
@@ -49,10 +49,10 @@ const QuestionAdmin: React.FC = () => {
       try {
         if (selectedQuestion._id) {
           // Update Question
-          await axios.put(`http://localhost:5000/api/question/update/${selectedQuestion._id}`, selectedQuestion);
+          await axios.put(`${import.meta.env.VITE_HOST}/api/question/update/${selectedQuestion._id}`, selectedQuestion);
         } else {
           // Create Question
-          await axios.post('http://localhost:5000/api/question/add', selectedQuestion);
+          await axios.post(`${import.meta.env.VITE_HOST}/api/question/add`, selectedQuestion);
         }
         fetchQuestions();
         setSelectedQuestion(null);
@@ -64,7 +64,7 @@ const QuestionAdmin: React.FC = () => {
 
   const handleQuestionDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:5000/api/question/${id}`);
+      await axios.delete(`${import.meta.env.VITE_HOST}/api/question/${id}`);
       fetchQuestions();
     } catch (error) {
       console.error('Error deleting question:', error);

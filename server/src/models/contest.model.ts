@@ -9,7 +9,7 @@ export interface ContestDocument extends Document {
   gitHubUsername: string[];
   startTime: Date;
   timeLimit: number;
-  participants: string[];
+  participants: mongoose.Types.ObjectId[];
 }
 
 const ContestSchema: Schema<ContestDocument> = new Schema({

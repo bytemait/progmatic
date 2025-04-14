@@ -6,11 +6,11 @@ import {authenticateUser, requireAdmin } from "../middlewares/checkRole.js";
 
 const questionRouter = express.Router()
 
-questionRouter.get("/", authenticateUser, getAllQuestions);
-questionRouter.post("/add", authenticateUser, requireAdmin, createQuestion);
-questionRouter.put("/update/:id",authenticateUser, requireAdmin, updateQuestion);
-questionRouter.get("/:id",authenticateUser, getQuestionById);
-questionRouter.delete("/:id",authenticateUser, requireAdmin, deleteQuestion);
+questionRouter.get("/", getAllQuestions);
+questionRouter.post("/add", createQuestion);
+questionRouter.put("/update/:id",updateQuestion);
+questionRouter.get("/:id",getQuestionById);
+questionRouter.delete("/:id",deleteQuestion);
 
 export default questionRouter;
 

@@ -50,7 +50,10 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    login(state, action: PayloadAction<GitHubUser>) {
+    login(
+      state,
+      action: PayloadAction<{ user: GitHubUser; role: string }>
+    ) {
       state.isLoggedIn = true;
       state.details = action.payload;
     },

@@ -38,7 +38,13 @@ interface GitHubUser {
 
 interface UserState {
   isLoggedIn: boolean;
-  details: GitHubUser | null;
+  details: {
+    login : string;
+    name: string;
+    avatar_url : string;
+    email : string| null;
+    bio : string| null;
+  } | null;
 }
 
 const initialState: UserState = {
@@ -54,8 +60,16 @@ const userSlice = createSlice({
       state,
       action: PayloadAction<{ user: GitHubUser; role: string }>
     ) {
+
+      const {login, name, avatar_url, email, bio} = action.payload.user;
       state.isLoggedIn = true;
-      state.details = action.payload;
+      state.details = {
+        login,
+        name,
+        avatar_url,
+        email,
+        bio,
+      };
     },
     logout(state) {
       state.isLoggedIn = false;

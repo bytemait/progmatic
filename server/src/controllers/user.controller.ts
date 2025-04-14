@@ -116,16 +116,35 @@ export const fetchMyContest = async (
   const { user } = req.params;
 
   try {
-    const contests = await ContestModel.find({ participants: user });
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(user);
+    
+    let userId;
+
+    if (isValidObjectId) {
+      userId = user;
+    } else {
+      // If not valid ObjectId, find user by gitHubUsername
+      const userRecord = await UserModel.findOne({ gitHubUsername: user });
+      if (!userRecord) {
+        res.status(404).json({ success: false, message: "User not found" });
+        return;
+      }
+      userId = userRecord._id;
+    }
+
+    const contests = await ContestModel.find({ participants: userId });
+
     if (!contests.length) {
       res.status(404).json({ success: false, message: "No contests found for this user" });
       return;
     }
+
     res.status(200).json({ success: true, contests });
   } catch (error) {
     res.status(500).json({ success: false, message: "Error fetching contests", error });
   }
 };
+
 
 export const startAttempt = async (
   req: Request,

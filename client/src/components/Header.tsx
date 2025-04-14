@@ -45,10 +45,9 @@ export default function Header() {
           },
         })
         .then((data) => {
-          // setUserData(data.data);
           console.log(data.data);
-          console.log("test");
-          dispatch(login(data.data));
+          dispatch(login({ user: data.data, role: "user" })); // 👈 wrap properly here
+
         });
     }
     if (localStorage.getItem("accessToken")) {

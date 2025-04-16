@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
 import { useSharedState } from "./SharedStateContext";
@@ -11,18 +11,39 @@ const languageMapping: Record<string, number> = {
 };
 
 const CodeLeft: React.FC = () => {
-  const [language, setLanguage] = useState("java");
+  const [language, setLanguage] = useState("cpp");
+  const [boilerplate, setBoilerplate] = useState<string>("");
   const editorRef = useRef<any>(null);
   const backendUrl = import.meta.env.VITE_HOST;
+
   const { setProgramOutput, programInput } = useSharedState();
 
+  const hardcodedQuestionId = "67ffcb5e8936c481cfe1e03d"; // ✅ your fixed ID
+
   useEffect(() => {
-    localStorage.getItem(language) &&
-      editorRef.current?.setValue(localStorage.getItem(language) || "");
-  }, [language]);
+    const fetchBoilerplate = async () => {
+      try {
+        const { data } = await axios.get(`${backendUrl}/api/question/${hardcodedQuestionId}`);
+        const code = data?.question?.boilerplate?.[language];
+        setBoilerplate(code || "");
+
+        // ✅ Set editor content if it's already mounted
+        if (editorRef.current && code) {
+          editorRef.current.setValue(code);
+        }
+      } catch (err) {
+        console.error("Error fetching boilerplate:", err);
+      }
+    };
+
+    fetchBoilerplate();
+  }, [language, backendUrl]); // 👈 only depend on language and backendUrl
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
+    if (boilerplate) {
+      editor.setValue(boilerplate);
+    }
   };
 
   const runCode = async () => {
@@ -92,7 +113,14 @@ const CodeLeft: React.FC = () => {
           </button>
         </div>
       </div>
-      <Editor height="70vh" language={language} theme="vs-dark" onMount={handleEditorDidMount} />
+      <Editor
+        defaultValue= {boilerplate}
+        // value={boilerplate}
+        height="70vh"
+        language={language}
+        theme="vs-dark"
+        onMount={handleEditorDidMount}
+      />
     </div>
   );
 };

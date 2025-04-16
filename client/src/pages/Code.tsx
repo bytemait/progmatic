@@ -1,34 +1,87 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import CodeLeft from "../components/CodeLeft";
 import CodeRight from "../components/CodeRight";
-import { SharedStateProvider } from "../components/SharedStateContext";
+import { SharedStateProvider, useSharedState } from "../components/SharedStateContext";
 import Split from "@uiw/react-split";
+import axios from "axios";
 
-const Code: React.FC = () => {
+interface Example {
+  input: string;
+  output: string;
+}
+
+interface Question {
+  _id: string;
+  questionName: string;
+  description: string;
+  example: Example;
+  constraints: string;
+}
+
+// Wrapper to access context inside functional component
+const CodeContent: React.FC<{ id: string }> = ({ id }) => {
+  const [question, setQuestion] = useState<Question | null>(null);
+  const { setSelectedQuestionId, setProgramInput, setExpectedOutput } = useSharedState();
+
+
+  useEffect(() => {
+    const fetchQuestion = async () => {
+      const questionIdToUse = id || "67ffcb5e8936c481cfe1e03d";
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_HOST}/api/question/${questionIdToUse}`
+        );
+        setQuestion(res.data.question);
+        setSelectedQuestionId(res.data.question._id); 
+        setProgramInput(res.data.question.example?.input || "");
+        setExpectedOutput(res.data.question.example?.output || "");
+      } catch (error: any) {
+        console.error("Error fetching question:", error.message);
+        if (error.response) {
+          console.error("Server responded with:", error.response.status);
+          console.error("Error data:", error.response.data);
+        }
+      }
+    };
+
+    fetchQuestion();
+  }, [id, setSelectedQuestionId]);
+
+  if (!question) {
+    return <div className="text-white p-10">Loading question...</div>;
+  }
+
   return (
-    <SharedStateProvider>
-      <div className="pt-20 p-4">
-        <h1 className="text-yellow-300 text-xl font-bold">Two Sum</h1>
-        <p className="text-white-600 whitespace-pre-line">
-          <strong>Problem Statement:</strong> <br />
+    <>
+      <div className="pt-20 px-4">
+        <h1 className="text-yellow-300 text-2xl font-bold mb-4">
+          {question.questionName}
+        </h1>
 
-          Given an array of integers <code>nums</code> and an integer{" "}
-          <code>target</code>, return the indices of the two numbers such that
-          they add up to <code>target</code>. You may assume that each input
-          would have exactly one solution, and you may not use the same
-          element twice. You can return the answer in any order.
-          <br />
-          <strong>Example 1: </strong>
-          <code> Input: nums = [2,7,11,15], target = 9 </code>
-          <code>Output: [0,1]</code>
-          Explanation: Because <code>nums[0] + nums[1] == 9</code>, we
-          return <code>[0, 1]</code>.
-          <br />
-          <strong>Example 2: </strong>
-          <code>Input: nums = [3,2,4], target = 6 </code>
-          <code>Output: [1,2]</code>
-        </p>
+        <div className="text-white whitespace-pre-line leading-relaxed mb-4">
+          <strong className="block text-lg mb-1">Problem Statement:</strong>
+          {question.description}
+        </div>
+
+        <div className="text-white mb-4">
+          <strong className="block text-lg">Example:</strong>
+          <p>
+            <span className="font-semibold">Input:</span>{" "}
+            {question.example?.input ?? "N/A"}
+          </p>
+          <p>
+            <span className="font-semibold">Output:</span>{" "}
+            {question.example?.output ?? "N/A"}
+          </p>
+        </div>
+
+        <div className="text-white mb-4">
+          <strong className="block text-lg">Constraints:</strong>
+          <pre className="whitespace-pre-line">{question.constraints}</pre>
+        </div>
       </div>
+
       <Split
         style={{
           height: "80vh",
@@ -44,6 +97,15 @@ const Code: React.FC = () => {
           <CodeRight />
         </div>
       </Split>
+    </>
+  );
+};
+
+const Code: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  return (
+    <SharedStateProvider>
+      <CodeContent id={id || "67ffcb5e8936c481cfe1e03d"} />
     </SharedStateProvider>
   );
 };

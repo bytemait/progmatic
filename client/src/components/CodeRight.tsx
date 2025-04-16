@@ -4,7 +4,7 @@ const CodeRight: React.FC = () => {
   const { programOutput, programInput } = useSharedState();
 
   return (
-    <div className="p-2">
+    <div className="p-2 text-black">
       <div className="flex flex-col h-full">
         {/* Input Section */}
         <textarea

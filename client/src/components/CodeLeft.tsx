@@ -16,13 +16,18 @@ const CodeLeft: React.FC = () => {
   const editorRef = useRef<any>(null);
   const backendUrl = import.meta.env.VITE_HOST;
 
-  const { setProgramOutput, programInput } = useSharedState();
-  const hardcodedQuestionId = "67ffcb5e8936c481cfe1e03d"; // ✅ your fixed ID
+  const {
+    selectedQuestionId,
+    setProgramOutput,
+    programInput,
+  } = useSharedState();
 
   useEffect(() => {
     const fetchBoilerplate = async () => {
+      if (!selectedQuestionId) return;
+
       try {
-        const { data } = await axios.get(`${backendUrl}/api/question/${hardcodedQuestionId}`);
+        const { data } = await axios.get(`${backendUrl}/api/question/${selectedQuestionId}`);
         const code = data?.question?.boilerplate?.[language];
         setBoilerplate(code || "");
 
@@ -35,7 +40,7 @@ const CodeLeft: React.FC = () => {
     };
 
     fetchBoilerplate();
-  }, [language, backendUrl]);
+  }, [language, selectedQuestionId, backendUrl]);
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
@@ -45,40 +50,33 @@ const CodeLeft: React.FC = () => {
   };
 
   const submitCode = async () => {
-    if (editorRef.current) {
-      const sourceCode = editorRef.current.getValue();
-      const languageId = languageMapping[language];
+    if (!selectedQuestionId || !editorRef.current) return;
 
-      // Fetch the driver code and test cases from the backend
-      try {
-        const { data: questionData } = await axios.get(`${backendUrl}/api/question/${hardcodedQuestionId}`);
+    const sourceCode = editorRef.current.getValue();
+    const languageId = languageMapping[language];
 
-        // Fetch the driver code based on language
-        const driverCode = questionData?.question?.driverCode?.[language] || "";
+    try {
+      const { data: questionData } = await axios.get(`${backendUrl}/api/question/${selectedQuestionId}`);
 
-        // Fetch the test cases from the backend (adjust key if needed)
-        const testCases = questionData?.question?.testCases || [];
+      const driverCode = questionData?.question?.driverCode?.[language] || "";
+      const testCases = questionData?.question?.testCases || [];
 
-        // Combine driver code with the boilerplate code
-        const combinedCode = `${sourceCode}\n${driverCode}`;
+      const combinedCode = `${sourceCode}\n${driverCode}`;
+      const expectedOutput = testCases.map((t: any) => t.expected).join("\n");
 
-        // Prepare the expected output for validation (modify if you have different logic)
-        const expectedOutput = testCases.map((testCase: any) => testCase.expected).join("\n");
+      setProgramOutput("Submitting Code...");
 
-        setProgramOutput("Submitting Code...");
+      const { data } = await axios.post(`${backendUrl}/api/judge/submit-code`, {
+        sourceCode: combinedCode,
+        languageId,
+        programInput,
+        expectedOutput,
+      });
 
-        const { data } = await axios.post(`${backendUrl}/api/judge/submit-code`, {
-          sourceCode: combinedCode,
-          languageId,
-          programInput: programInput,  // Custom input from the frontend
-          expectedOutput: expectedOutput,  // Expected output from test cases
-        });
-
-        setProgramOutput(data.message === "Accepted the test case" ? "✅ Accepted" : "❌ Failed");
-      } catch (error) {
-        console.error("Submission Error:", error);
-        setProgramOutput("Submission failed.");
-      }
+      setProgramOutput(data.message === "Accepted the test case" ? "✅ Accepted" : "❌ Failed");
+    } catch (error) {
+      console.error("Submission Error:", error);
+      setProgramOutput("Submission failed.");
     }
   };
 

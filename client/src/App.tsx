@@ -26,6 +26,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/code" element={<Code />} />
           <Route path="/contest" element={<Contest />} />
+          <Route path= "/contest/:contestName/:id" element = {<Code/>} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/discussions" element={<Discussions />} />
           <Route path="/learn" element={<Learn />} />

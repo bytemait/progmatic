@@ -1,6 +1,5 @@
 import axios from "axios";
 import moment from "moment-timezone";
-import { useSelector } from "react-redux";
 import { useAppSelector } from "../store/hooks";
 import { RootState } from "./Store";
 import { useEffect, useState } from "react";
@@ -12,8 +11,8 @@ interface ContestInfoModalProps {
     timeLimit: number;
     totalQuestions: number;
     startTime: string;
-    // 🔻 Add this:
-    participants: string[]; // or `mongoose.Types.ObjectId[]
+    questions: string[];
+    participants: string[];
   };
   closeModal: () => void;
 }
@@ -22,20 +21,27 @@ const ContestInfoModal: React.FC<ContestInfoModalProps> = ({
   contest,
   closeModal,
 }) => {
-  const username = useAppSelector((state: RootState) => state.user.details?.login);
+  const username = useAppSelector(
+    (state: RootState) => state.user.details?.login
+  );
+  const user = useAppSelector((state: RootState) => state.user.details);
+  const userId = user?._id;
+  const hasStarted = moment().isAfter(moment(contest.startTime));
   const [isRegistered, setIsRegistered] = useState(false);
 
   useEffect(() => {
+    console.log("Checking registration...");
+    console.log("Username:", username);
+    console.log("Participants:", contest.participants);
 
-    if (contest?.participants && username) {
-      const userId = username.toString();
-      setIsRegistered(
-        contest.participants.some(
-          (participantId: string) => participantId.toString() === userId
-        )
+    if (contest?.participants?.length > 0 && username) {
+      const isUserRegistered = contest.participants.some(
+        (participantId: string) => participantId.toString() === userId
       );
+      console.log("Is user registered?", isUserRegistered);
+      setIsRegistered(isUserRegistered);
     }
-  }, [contest, username]);
+  }, [contest.participants, username]);
 
   const handleRegistration = async () => {
     console.log("backend:", {
@@ -134,21 +140,6 @@ const ContestInfoModal: React.FC<ContestInfoModalProps> = ({
             </div>
           </div>
           <div className="flex flex-col gap-4 justify-center pr-12 pt-16 text-black">
-            {/* <div className="bg-[#BCE29E] h-36 w-72 flex relative rounded-xl py-1 px-3">
-                          <div className="flex flex-col justify-between">
-                              <span className="font-semibold">Contest starts in:</span>
-                              <div className="flex gap-8 px-2">
-                                  <span>Days</span>
-                                  <span>Hours</span>
-                                  <span>Mins</span>
-                                  <span>Secs</span>
-                              </div>
-                          </div>
-                      </div> */}
-            {/* <div className="bg-[#6DC956] font-bold text-5xl pt-2 -translate-x-6 -translate-y-6 h-[80px] w-[340px] flex justify-center absolute rounded-xl">
-                          6 | 9 | 6 | 9
-                      </div> */}
-            {/* <button onClick={handleRegistration} className="bg-red-600 rounded-full px-6 py-2 w-fit mx-auto text-light hover:bg-red-800">Register Now</button> */}
             {isRegistered ? (
               <button
                 onClick={handleUnregistration}
@@ -191,12 +182,35 @@ const ContestInfoModal: React.FC<ContestInfoModalProps> = ({
             </div>
           </div>
         </div>
-        <div className="text-center">
+
+        {/* Conditional Question Links */}
+        {isRegistered && hasStarted && contest.questions.length > 0 && (
+          <div className="mt-8 text-center">
+            <h3 className="text-xl font-semibold mb-2 text-light">
+              Questions:
+            </h3>
+            <div className="flex gap-4 justify-center flex-wrap">
+              {contest.questions.map((questionId, index) => (
+                <a
+                  key={questionId}
+                  href={`/contest/${contest.contestName}/${questionId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-red-400 hover:text-red-600 underline text-lg"
+                >
+                  Question {index + 1}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Close Button */}
+        <div className="text-center mt-6">
           <button
             className="bg-red-600 rounded-full px-6 py-1 text-lg hover:bg-red-800"
             onClick={closeModal}
           >
-            {" "}
             Close
           </button>
         </div>

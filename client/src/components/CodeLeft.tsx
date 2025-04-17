@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import Editor from "@monaco-editor/react";
 import axios from "axios";
 import { useSharedState } from "./SharedStateContext";
+import Editor from "@monaco-editor/react";
 
 const languageMapping: Record<string, number> = {
   java: 62,
@@ -17,7 +17,6 @@ const CodeLeft: React.FC = () => {
   const backendUrl = import.meta.env.VITE_HOST;
 
   const { setProgramOutput, programInput } = useSharedState();
-
   const hardcodedQuestionId = "67ffcb5e8936c481cfe1e03d"; // ✅ your fixed ID
 
   useEffect(() => {
@@ -27,7 +26,6 @@ const CodeLeft: React.FC = () => {
         const code = data?.question?.boilerplate?.[language];
         setBoilerplate(code || "");
 
-        // ✅ Set editor content if it's already mounted
         if (editorRef.current && code) {
           editorRef.current.setValue(code);
         }
@@ -37,7 +35,7 @@ const CodeLeft: React.FC = () => {
     };
 
     fetchBoilerplate();
-  }, [language, backendUrl]); // 👈 only depend on language and backendUrl
+  }, [language, backendUrl]);
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
@@ -46,41 +44,34 @@ const CodeLeft: React.FC = () => {
     }
   };
 
-  const runCode = async () => {
-    if (editorRef.current) {
-      const sourceCode = editorRef.current.getValue();
-      const languageId = languageMapping[language];
-
-      setProgramOutput("Running Code...");
-
-      try {
-        const { data } = await axios.post(`${backendUrl}/api/judge/run-code`, {
-          sourceCode,
-          languageId,
-          programInput: programInput.current,
-        });
-
-        setProgramOutput(data.stdout ? atob(data.stdout) : "No Output");
-      } catch (error) {
-        console.error("Execution Error:", error);
-        setProgramOutput("Execution failed.");
-      }
-    }
-  };
-
   const submitCode = async () => {
     if (editorRef.current) {
       const sourceCode = editorRef.current.getValue();
       const languageId = languageMapping[language];
 
-      setProgramOutput("Submitting Code...");
-
+      // Fetch the driver code and test cases from the backend
       try {
+        const { data: questionData } = await axios.get(`${backendUrl}/api/question/${hardcodedQuestionId}`);
+
+        // Fetch the driver code based on language
+        const driverCode = questionData?.question?.driverCode?.[language] || "";
+
+        // Fetch the test cases from the backend (adjust key if needed)
+        const testCases = questionData?.question?.testCases || [];
+
+        // Combine driver code with the boilerplate code
+        const combinedCode = `${sourceCode}\n${driverCode}`;
+
+        // Prepare the expected output for validation (modify if you have different logic)
+        const expectedOutput = testCases.map((testCase: any) => testCase.expected).join("\n");
+
+        setProgramOutput("Submitting Code...");
+
         const { data } = await axios.post(`${backendUrl}/api/judge/submit-code`, {
-          sourceCode,
+          sourceCode: combinedCode,
           languageId,
-          programInput: "4\n1\n2\n3\n4\n",
-          expectedOutput: "1\n2\n6\n24",
+          programInput: programInput,  // Custom input from the frontend
+          expectedOutput: expectedOutput,  // Expected output from test cases
         });
 
         setProgramOutput(data.message === "Accepted the test case" ? "✅ Accepted" : "❌ Failed");
@@ -105,17 +96,13 @@ const CodeLeft: React.FC = () => {
           <option value="javascript">JavaScript</option>
         </select>
         <div>
-          <button className="bg-black text-white px-4 py-2 rounded mx-1" onClick={runCode}>
-            Run
-          </button>
-          <button className="bg-green-600 text-white px-4 py-2 rounded mx-1" onClick={submitCode}>
+          <button className="bg-black text-white px-4 py-2 rounded mx-1" onClick={submitCode}>
             Submit
           </button>
         </div>
       </div>
       <Editor
-        defaultValue= {boilerplate}
-        // value={boilerplate}
+        defaultValue={boilerplate}
         height="70vh"
         language={language}
         theme="vs-dark"

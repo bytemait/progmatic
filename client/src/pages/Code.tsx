@@ -19,23 +19,21 @@ interface Question {
   constraints: string;
 }
 
-// Wrapper to access context inside functional component
-const CodeContent: React.FC<{ id: string }> = ({ id }) => {
+const CodeContent: React.FC<{ questionId: string }> = ({ questionId }) => {
   const [question, setQuestion] = useState<Question | null>(null);
   const { setSelectedQuestionId, setProgramInput, setExpectedOutput } = useSharedState();
 
-
   useEffect(() => {
     const fetchQuestion = async () => {
-      const questionIdToUse = id || "67ffcb5e8936c481cfe1e03d";
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_HOST}/api/question/${questionIdToUse}`
+          `${import.meta.env.VITE_HOST}/api/question/${questionId}`
         );
-        setQuestion(res.data.question);
-        setSelectedQuestionId(res.data.question._id); 
-        setProgramInput(res.data.question.example?.input || "");
-        setExpectedOutput(res.data.question.example?.output || "");
+        const q = res.data.question;
+        setQuestion(q);
+        setSelectedQuestionId(q._id);
+        setProgramInput(q.example?.input || "");
+        setExpectedOutput(q.example?.output || "");
       } catch (error: any) {
         console.error("Error fetching question:", error.message);
         if (error.response) {
@@ -46,7 +44,7 @@ const CodeContent: React.FC<{ id: string }> = ({ id }) => {
     };
 
     fetchQuestion();
-  }, [id, setSelectedQuestionId]);
+  }, [questionId]);
 
   if (!question) {
     return <div className="text-white p-10">Loading question...</div>;
@@ -102,10 +100,11 @@ const CodeContent: React.FC<{ id: string }> = ({ id }) => {
 };
 
 const Code: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { contestId, id } = useParams<{ contestId: string; id: string }>();
+
   return (
     <SharedStateProvider>
-      <CodeContent id={id || "67ffcb5e8936c481cfe1e03d"} />
+      <CodeContent questionId={id || "67ffcb5e8936c481cfe1e03d"} />
     </SharedStateProvider>
   );
 };

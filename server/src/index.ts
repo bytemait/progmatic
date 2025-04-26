@@ -147,7 +147,21 @@ app.get("/getUserData", async (req, res) => {
       },
     });
 
-    res.json(response.data);
+    const githubUser = response.data;
+    const user = await UserModel.findOne({ gitHubUsername: githubUser.login });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found in database" });
+    }
+
+    res.json({
+      _id : user._id,
+      login: githubUser.login,
+      name: githubUser.name,
+      avatar_url: githubUser.avatar_url,
+      email: githubUser.email,
+      bio: githubUser.bio,
+    });
   } catch (error: any) {
     console.error(
       "Error fetching data:",

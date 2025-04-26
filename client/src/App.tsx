@@ -13,6 +13,8 @@ import Contest from "./pages/Contest";
 import Userdashboard from "./pages/Userdashboard";
 import Admin from "./pages/Admin";
 import AdminQuestion from "./pages/AdminQuestion";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import
+
 function App() {
 
   return (
@@ -24,14 +26,16 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/code" element={<Code />} />
           <Route path="/contest" element={<Contest />} />
+          <Route path= "/contest/:contestName/:id" element = {<Code/>} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/discussions" element={<Discussions />} />
           <Route path="/learn" element={<Learn />} />
           <Route path="*" element={<Navigate to="/404" />} />
           <Route path="/404" element={<Error404 />} />
           <Route path="/dashboard" element={<Userdashboard />} /> 
-          <Route path="/admin" element={<Admin />} /> 
-          <Route path="/adminques" element={<AdminQuestion />} /> 
+
+          <Route path="/admin" element={<ProtectedRoute element={<Admin />} />} />
+          <Route path="/adminques" element={<ProtectedRoute element={<AdminQuestion />} />} />
 
         </Routes>
         <Easter />

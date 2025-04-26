@@ -20,7 +20,7 @@ export const getAllQuestions = async (req: any, res: any, next: any): Promise<vo
 
 export const createQuestion = async (req: any, res: any, next:any): Promise<void> => {
     try {
-      const { questionId, questionName, title, description, platformLink, solved, tags, testCases, answer, example, constraints } = req.body;
+      const { questionId, questionName, title, description, platformLink, boilerplate,driverCode,solved, tags, testCases, answer, example, constraints } = req.body;
   
       // Create a new question instance
       const newQuestion = new QuestionModel({
@@ -29,7 +29,9 @@ export const createQuestion = async (req: any, res: any, next:any): Promise<void
         title,
         description,
         platformLink,
+        boilerplate,
         solved,
+        driverCode,
         tags,
         testCases,
         answer,
@@ -51,7 +53,7 @@ export const createQuestion = async (req: any, res: any, next:any): Promise<void
 
 
 export const updateQuestion = async(req:any, res:any, next:any):Promise <void> =>{
-    const { questionName, title, description, platformLink, solved, tags, testCases, answer, example, constraints } = req.body;
+    const { questionName, title, description, platformLink, boilerplate,driverCode,solved, tags, testCases, answer, example, constraints } = req.body;
     const questionId = req.params.id;
     let question;
 
@@ -61,6 +63,8 @@ export const updateQuestion = async(req:any, res:any, next:any):Promise <void> =
             title,
             description,
             platformLink,
+            boilerplate,
+            driverCode,
             solved,
             tags,
             testCases,

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface GitHubUser {
+  _id: string; // ✅ Add this field from your MongoDB backend
   avatar_url: string;
   bio: string | null;
   blog: string;
@@ -38,7 +39,14 @@ interface GitHubUser {
 
 interface UserState {
   isLoggedIn: boolean;
-  details: GitHubUser | null;
+  details: {
+    _id : string;
+    login : string;
+    name: string;
+    avatar_url : string;
+    email : string| null;
+    bio : string| null;
+  } | null;
 }
 
 const initialState: UserState = {
@@ -50,9 +58,21 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    login(state, action: PayloadAction<GitHubUser>) {
+    login(
+      state,
+      action: PayloadAction<{ user: GitHubUser; role: string }>
+    ) {
+
+      const {_id, login, name, avatar_url, email, bio} = action.payload.user;
       state.isLoggedIn = true;
-      state.details = action.payload;
+      state.details = {
+        _id,
+        login,
+        name,
+        avatar_url,
+        email,
+        bio,
+      };
     },
     logout(state) {
       state.isLoggedIn = false;

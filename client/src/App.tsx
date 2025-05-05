@@ -13,7 +13,7 @@ import Contest from "./pages/Contest";
 import Userdashboard from "./pages/Userdashboard";
 import Admin from "./pages/Admin";
 import AdminQuestion from "./pages/AdminQuestion";
-import ProtectedRoute from "./components/ProtectedRoute"; // Import
+// import ProtectedRoute from "./components/ProtectedRoute"; // Import
 
 function App() {
 

@@ -1,6 +1,6 @@
 import axios from "axios";
-import { login } from "../redux/slices/userSlice";
-import { AppDispatch } from "../redux/store";
+import { login } from "../store/userSlice";
+import { AppDispatch } from "../store/store";
 
 export const loginUser = async (dispatch: AppDispatch) => {
   try {

@@ -100,7 +100,7 @@ const CodeContent: React.FC<{ questionId: string }> = ({ questionId }) => {
 };
 
 const Code: React.FC = () => {
-  const { contestId, id } = useParams<{ contestId: string; id: string }>();
+  const { id } = useParams<{ id: string }>();
 
   return (
     <SharedStateProvider>
@@ -108,5 +108,7 @@ const Code: React.FC = () => {
     </SharedStateProvider>
   );
 };
+
+
 
 export default Code;

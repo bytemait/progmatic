@@ -107,8 +107,9 @@ app.get("/getAccessToken", async function (req, res) {
       user.accessToken = access_token;
 
       await user.save();
+      return res.status(200).json({ message: "Welcome! Repeat user", access_token });
 
-      return res.redirect(`${process.env.FRONTEND_URL}/?token=${access_token}`);
+      // return res.redirect(`${process.env.FRONTEND_URL}/?token=${access_token}`);
 
     }
 

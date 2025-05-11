@@ -14,54 +14,49 @@ export default function Header() {
   const { isLoggedIn, details } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const codeParam = urlParams.get("code");
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenParam = urlParams.get("token");
 
-    if (codeParam && localStorage.getItem("accessToken") == null) {
-      async function getAccessToken() {
-        try {
-          const response: AxiosResponse<any> = await axios.get(
-            `${import.meta.env.VITE_HOST}/getAccessToken?code=${codeParam}`
-          );
-          console.log(response.data);
-          if (response.data.access_token) {
-            localStorage.setItem("accessToken", response.data.access_token);
-            navigate("/");
-            window.location.reload();
-          }
-        } catch (error) {
-          console.error("Error fetching access token:", error);
-        }
-      }
-      getAccessToken();
-    }
+  // If token is in URL (from backend redirect), store it and clean up URL
+  if (tokenParam) {
+    localStorage.setItem("accessToken", tokenParam);
+    // Remove token from URL for cleanliness
+    urlParams.delete("token");
+    const cleanUrl =
+      window.location.pathname +
+      (urlParams.toString() ? `?${urlParams.toString()}` : "");
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
 
+  // If access token is present, fetch user data
+  if (localStorage.getItem("accessToken")) {
     async function getUserData() {
-      await axios
-        .get(`${import.meta.env.VITE_HOST}/getUserData`, {
-          headers: {
-            Authorization: `${localStorage.getItem("accessToken")}`,
-          },
-        })
-        .then((data) => {
-          console.log(data.data);
-          dispatch(login({ user: data.data, role: "user" })); // 👈 wrap properly here
-
-        });
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_HOST}/getUserData`,
+          {
+            headers: {
+              Authorization: `${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        dispatch(login({ user: data, role: "user" }));
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
     }
-    if (localStorage.getItem("accessToken")) {
-      getUserData();
-    }
-  }, [navigate]);
+    getUserData();
+  }
+}, [dispatch]);
 
   const handleLoginWithGitHub = () => {
-    window.location.assign(
-      `https://github.com/login/oauth/authorize?client_id=${
-        import.meta.env.VITE_GITHUB_CLIENT_ID
-      }`
-    );
-  };
+  window.location.assign(
+    `https://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_GITHUB_CLIENT_ID
+    }&redirect_uri=https://byte-progmatic.onrender.com/getAccessToken`
+  );
+};
+
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");

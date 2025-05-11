@@ -3,7 +3,7 @@
 ## ByteSoc's proprietary competitive programming platform
 
 ### Backend deployment:
-https://byte-progmatic.onrender.com
+*   https://byte-progmatic.onrender.com
 (run this before opening the frontend link)
 ---
 ### Getting Started

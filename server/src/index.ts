@@ -28,7 +28,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://byte-progmatic.vercel.app/" 
+  "https://byte-progmatic.vercel.app" 
 ];
 
 app.use(

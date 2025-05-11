@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { Avatar, Dropdown, Navbar } from "flowbite-react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "./Store";
 import { login, logout } from "../store/userSlice";

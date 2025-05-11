@@ -26,14 +26,26 @@ dotenv.config({
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://progmatic.chayanmann.in" 
+];
+
 app.use(
   cors({
-    origin:"http://localhost:5173",
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS',],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,  // Allow cookies in cross-origin requests
+    credentials: true,
   })
 );
+
 
 // Use cookie-parser middleware to parse cookies
 app.use(cookieParser());
@@ -95,10 +107,10 @@ app.get("/getAccessToken", async function (req, res) {
       user.accessToken = access_token;
 
       await user.save();
+      // return res.status(200).json({ message: "Welcome! Repeat user", access_token });
 
-      return res
-        .status(200)
-        .json({ message: "Welcome! Repeat user", access_token });
+      return res.redirect(`${process.env.FRONTEND_URL}/?token=${access_token}`);
+
     }
 
   // If the user doesn't exist, create a new user

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 interface TestCase {
   input: string;
@@ -11,6 +11,20 @@ interface Example {
   output: string;
 }
 
+interface Boilerplate {
+  java: string;
+  cpp: string;
+  python: string;
+  javascript: string;
+}
+
+interface DriverCode {
+  java: string;
+  cpp: string;
+  python: string;
+  javascript: string;
+}
+
 interface Question {
   _id?: string;
   questionId: string;
@@ -18,6 +32,8 @@ interface Question {
   title: string;
   description: string;
   platformLink: string;
+  boilerplate: Boilerplate;
+  driverCode: DriverCode;
   solved: boolean;
   tags: string[];
   testCases: TestCase[];
@@ -28,7 +44,9 @@ interface Question {
 
 const QuestionAdmin: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
+    null
+  );
 
   useEffect(() => {
     fetchQuestions();
@@ -36,10 +54,12 @@ const QuestionAdmin: React.FC = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_HOST}/api/question/`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_HOST}/api/question/`
+      );
       setQuestions(response.data.questions);
     } catch (error) {
-      console.error('Error fetching questions:', error);
+      console.error("Error fetching questions:", error);
     }
   };
 
@@ -49,15 +69,25 @@ const QuestionAdmin: React.FC = () => {
       try {
         if (selectedQuestion._id) {
           // Update Question
-          await axios.put(`${import.meta.env.VITE_HOST}/api/question/update/${selectedQuestion._id}`, selectedQuestion, {withCredentials: true,});
+          await axios.put(
+            `${import.meta.env.VITE_HOST}/api/question/update/${
+              selectedQuestion._id
+            }`,
+            selectedQuestion,
+            { withCredentials: true }
+          );
         } else {
           // Create Question
-          await axios.post(`${import.meta.env.VITE_HOST}/api/question/add`, selectedQuestion, {withCredentials: true});
+          await axios.post(
+            `${import.meta.env.VITE_HOST}/api/question/add`,
+            selectedQuestion,
+            { withCredentials: true }
+          );
         }
         fetchQuestions();
         setSelectedQuestion(null);
       } catch (error) {
-        console.error('Error saving question:', error);
+        console.error("Error saving question:", error);
       }
     }
   };
@@ -67,11 +97,15 @@ const QuestionAdmin: React.FC = () => {
       await axios.delete(`${import.meta.env.VITE_HOST}/api/question/${id}`);
       fetchQuestions();
     } catch (error) {
-      console.error('Error deleting question:', error);
+      console.error("Error deleting question:", error);
     }
   };
 
-  const handleTestCaseChange = (index: number, field: keyof TestCase, value: string) => {
+  const handleTestCaseChange = (
+    index: number,
+    field: keyof TestCase,
+    value: string
+  ) => {
     if (selectedQuestion) {
       const updatedTestCases = [...selectedQuestion.testCases];
       updatedTestCases[index][field] = value;
@@ -81,14 +115,19 @@ const QuestionAdmin: React.FC = () => {
 
   const handleAddTestCase = () => {
     if (selectedQuestion) {
-      const updatedTestCases = [...selectedQuestion.testCases, { input: '', output: '' }];
+      const updatedTestCases = [
+        ...selectedQuestion.testCases,
+        { input: "", output: "" },
+      ];
       setSelectedQuestion({ ...selectedQuestion, testCases: updatedTestCases });
     }
   };
 
   const handleRemoveTestCase = (index: number) => {
     if (selectedQuestion) {
-      const updatedTestCases = selectedQuestion.testCases.filter((_, i) => i !== index);
+      const updatedTestCases = selectedQuestion.testCases.filter(
+        (_, i) => i !== index
+      );
       setSelectedQuestion({ ...selectedQuestion, testCases: updatedTestCases });
     }
   };
@@ -123,17 +162,29 @@ const QuestionAdmin: React.FC = () => {
           className="bg-green-500 text-white px-2 py-1 rounded mt-2"
           onClick={() =>
             setSelectedQuestion({
-              questionId: '',
-              questionName: '',
-              title: '',
-              description: '',
-              platformLink: '',
+              questionId: "",
+              questionName: "",
+              title: "",
+              description: "",
+              platformLink: "",
+              boilerplate: {
+                java: "",
+                cpp: "",
+                python: "",
+                javascript: "",
+              },
+              driverCode: {
+                java: "",
+                cpp: "",
+                python: "",
+                javascript: "",
+              },
               solved: false,
               tags: [],
               testCases: [],
-              answer: '',
-              example: { input: '', output: '' },
-              constraints: ''
+              answer: "",
+              example: { input: "", output: "" },
+              constraints: "",
             })
           }
         >
@@ -144,14 +195,21 @@ const QuestionAdmin: React.FC = () => {
       {/* Question Form */}
       {selectedQuestion && (
         <form onSubmit={handleQuestionCreateOrUpdate}>
-          <h2 className="text-xl font-semibold mb-4">{selectedQuestion._id ? 'Edit Question' : 'Add Question'}</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {selectedQuestion._id ? "Edit Question" : "Add Question"}
+          </h2>
 
           <input
             className="border p-2 mb-2 text-black w-full"
             type="text"
             placeholder="Question ID"
             value={selectedQuestion.questionId}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, questionId: e.target.value })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                questionId: e.target.value,
+              })
+            }
             required
           />
 
@@ -160,7 +218,12 @@ const QuestionAdmin: React.FC = () => {
             type="text"
             placeholder="Question Name"
             value={selectedQuestion.questionName}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, questionName: e.target.value })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                questionName: e.target.value,
+              })
+            }
             required
           />
 
@@ -169,7 +232,12 @@ const QuestionAdmin: React.FC = () => {
             type="text"
             placeholder="Title"
             value={selectedQuestion.title}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, title: e.target.value })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                title: e.target.value,
+              })
+            }
             required
           />
 
@@ -177,7 +245,12 @@ const QuestionAdmin: React.FC = () => {
             className="border p-2 mb-2 text-black w-full"
             placeholder="Description"
             value={selectedQuestion.description}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, description: e.target.value })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                description: e.target.value,
+              })
+            }
             required
           />
 
@@ -186,16 +259,149 @@ const QuestionAdmin: React.FC = () => {
             type="text"
             placeholder="Platform Link"
             value={selectedQuestion.platformLink}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, platformLink: e.target.value })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                platformLink: e.target.value,
+              })
+            }
             required
           />
 
+          <h3 className="font-semibold mb-2">BoilerPlate Code</h3>
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="java boilerplate"
+            value={selectedQuestion.boilerplate.java}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                boilerplate: {
+                  ...selectedQuestion.boilerplate,
+                  java: e.target.value,
+                },
+              })
+            }
+            required
+          />
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="cpp boilerplate"
+            value={selectedQuestion.boilerplate.cpp}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                boilerplate: {
+                  ...selectedQuestion.boilerplate,
+                  cpp: e.target.value,
+                },
+              })
+            }
+          />
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="python boilerplate"
+            value={selectedQuestion.boilerplate.python}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                boilerplate: {
+                  ...selectedQuestion.boilerplate,
+                  python: e.target.value,
+                },
+              })
+            }
+          />
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="javascript boilerplate"
+            value={selectedQuestion.boilerplate.javascript}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                boilerplate: {
+                  ...selectedQuestion.boilerplate,
+                  javascript: e.target.value,
+                },
+              })
+            }
+          />
+          <h3 className="font-semibold mb-2">DriverCode</h3>
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="java driver code"
+            value={selectedQuestion.driverCode.java}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                driverCode: {
+                  ...selectedQuestion.driverCode,
+                  java: e.target.value,
+                },
+              })
+            }
+          />
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="cpp driver code"
+            value={selectedQuestion.driverCode.cpp}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                driverCode: {
+                  ...selectedQuestion.driverCode,
+                  cpp: e.target.value,
+                },
+              })
+            }
+          />
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="python driver code"
+            value={selectedQuestion.driverCode.python}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                driverCode: {
+                  ...selectedQuestion.driverCode,
+                  python: e.target.value,
+                },
+              })
+            }
+          />
+          <input
+            className="border p-2 mb-2 text-black w-full"
+            type="text"
+            placeholder="javascript driver code"
+            value={selectedQuestion.driverCode.javascript}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                driverCode: {
+                  ...selectedQuestion.driverCode,
+                  javascript: e.target.value,
+                },
+              })
+            }
+          />
           <input
             className="border p-2 mb-2 text-black w-full"
             type="text"
             placeholder="Constraints"
             value={selectedQuestion.constraints}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, constraints: e.target.value })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                constraints: e.target.value,
+              })
+            }
             required
           />
 
@@ -204,7 +410,12 @@ const QuestionAdmin: React.FC = () => {
             type="text"
             placeholder="Answer"
             value={selectedQuestion.answer}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, answer: e.target.value })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                answer: e.target.value,
+              })
+            }
             required
           />
 
@@ -214,7 +425,12 @@ const QuestionAdmin: React.FC = () => {
             type="text"
             placeholder="Example Input"
             value={selectedQuestion.example.input}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, example: { ...selectedQuestion.example, input: e.target.value } })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                example: { ...selectedQuestion.example, input: e.target.value },
+              })
+            }
             required
           />
 
@@ -223,7 +439,15 @@ const QuestionAdmin: React.FC = () => {
             type="text"
             placeholder="Example Output"
             value={selectedQuestion.example.output}
-            onChange={(e) => setSelectedQuestion({ ...selectedQuestion, example: { ...selectedQuestion.example, output: e.target.value } })}
+            onChange={(e) =>
+              setSelectedQuestion({
+                ...selectedQuestion,
+                example: {
+                  ...selectedQuestion.example,
+                  output: e.target.value,
+                },
+              })
+            }
             required
           />
 
@@ -235,7 +459,9 @@ const QuestionAdmin: React.FC = () => {
                 type="text"
                 placeholder="Test Case Input"
                 value={testCase.input}
-                onChange={(e) => handleTestCaseChange(index, 'input', e.target.value)}
+                onChange={(e) =>
+                  handleTestCaseChange(index, "input", e.target.value)
+                }
                 required
               />
               <input
@@ -243,7 +469,9 @@ const QuestionAdmin: React.FC = () => {
                 type="text"
                 placeholder="Test Case Output"
                 value={testCase.output}
-                onChange={(e) => handleTestCaseChange(index, 'output', e.target.value)}
+                onChange={(e) =>
+                  handleTestCaseChange(index, "output", e.target.value)
+                }
                 required
               />
               <button
@@ -256,12 +484,19 @@ const QuestionAdmin: React.FC = () => {
             </div>
           ))}
 
-          <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4" type="button" onClick={handleAddTestCase}>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
+            type="button"
+            onClick={handleAddTestCase}
+          >
             Add Test Case
           </button>
 
-          <button className="bg-blue-500 text-white px-4 py-2 rounded" type="submit">
-            {selectedQuestion._id ? 'Update Question' : 'Create Question'}
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+            type="submit"
+          >
+            {selectedQuestion._id ? "Update Question" : "Create Question"}
           </button>
         </form>
       )}

@@ -13,7 +13,7 @@ import Contest from "./pages/Contest";
 import Userdashboard from "./pages/Userdashboard";
 import Admin from "./pages/Admin";
 import AdminQuestion from "./pages/AdminQuestion";
-import ProtectedRoute from "./components/ProtectedRoute"; // Import
+// import ProtectedRoute from "./components/ProtectedRoute"; // Import
 
 function App() {
 
@@ -34,8 +34,8 @@ function App() {
           <Route path="/404" element={<Error404 />} />
           <Route path="/dashboard" element={<Userdashboard />} /> 
 
-          <Route path="/admin" element={<ProtectedRoute element={<Admin />} />} />
-          <Route path="/adminques" element={<ProtectedRoute element={<AdminQuestion />} />} />
+          <Route path="/admin" element={<Admin />}/>
+          <Route path="/adminques" element={<AdminQuestion />}/>
 
         </Routes>
         <Easter />

@@ -46,6 +46,8 @@ interface UserState {
     avatar_url : string;
     email : string| null;
     bio : string| null;
+    html_url ?: string;
+    site_admin ?: boolean;
   } | null;
 }
 
@@ -63,7 +65,7 @@ const userSlice = createSlice({
       action: PayloadAction<{ user: GitHubUser; role: string }>
     ) {
 
-      const {_id, login, name, avatar_url, email, bio} = action.payload.user;
+      const {_id, login, name, avatar_url, email, bio, html_url, site_admin} = action.payload.user;
       state.isLoggedIn = true;
       state.details = {
         _id,
@@ -72,6 +74,8 @@ const userSlice = createSlice({
         avatar_url,
         email,
         bio,
+        html_url,
+        site_admin
       };
     },
     logout(state) {
